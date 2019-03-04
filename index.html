@@ -2,8 +2,13 @@
 <html>
 <head>
 	<title>TD</title>
+	<meta charset="UTF-8">
 </head>
 <body>
+	<noscript>
+		JavaScript is required to be able to use this page.
+		<small>Error: JavaScript disabled or unavailable</small>
+	</noscript>
 	<div id="main">
 		<canvas id="render-canvas" width="800" height="600" style="border: 1px solid black;">
 			Your current browser does not support important features needed to run this app. Please update your browser to the latest version or try another browser.
@@ -12,11 +17,17 @@
 		<span>
 			<button id="start" style="vertical-align: top;" onclick="play();">Start</button>
 			<button id="pause" style="vertical-align: top;" onclick="pause();">Pause</button>
+			<button id="level1" style="vertical-align: top;">Level 1</button>
+			<button id="wave" style="vertical-align: top;">Send wave</button>
+			<span style="vertical-align: top;">
+				<span id="fpscounter" ></span>FPS
+			</span>
 		</span>
 	</div>
 	<script type="text/javascript" src="general.js"></script>
-	<script type="text/javascript" src="grid.js"></script>
+	<script type="text/javascript" src="levelData.js"></script>
 	<script type="text/javascript" src="enemy.js"></script>
 	<script type="text/javascript" src="tower.js"></script>
+	<script type="text/javascript" src="test.js"></script>
 </body>
 </html>

@@ -1,73 +1,188 @@
 config = {};
 
-config.game = {};
-config.game.paused = true;
-config.game.gridSquareSize = 32; //size of one grid square
-config.game.gridOffset = {
+config.paused = true;
+config.gridSquareSize = 32; //size of one grid square
+config.gridOffset = {
 	x: 0,
 	y: 0
 }; //shift from up-left corner
-config.ticksPerSecond = 60; //effectively maximum framerate
-//TODO: try to make it work for 60 ticks
-config.game.canvas = document.getElementById('render-canvas');
-config.game.canvasRender = config.game.canvas.getContext("2d");
-
-game = {
-	isRunning: false,
-	currentLevel: null,
-	currentGrid: null,
-	currentWave: 0,
-	towerList: [],
-	enemyList: []
+config.gridCells = {
+	width: 15,
+	height: 12
 }
+config.canvas = document.getElementById('render-canvas');
+config.canvasRender = config.canvas.getContext("2d");
+
+currentGame = null;
+
+/**
+ * Starts a new game based on a given level, builds level from levelData
+ * level: {
+ 	layout: {
+ 		spawn: position+edge, 
+ 		pathPoints: [position]
+ 		},
+ 	},
+ 	waves: [{
+		count: integer,
+		delay: integer,
+		stats: object
+ 	}]
+ */
+Game = function (intLevel) {
+
+	this.level = clone(levelData[intLevel]);
+	this.currentWave = 0;
+	this.grid = [];
+	this.buildGrid();
+	this.towerList = [];
+	this.enemyList = [];
+	this.pendingEnemyList = [];
+}
+Game.prototype.buildGrid = function () {
+	var startPoint = clone(this.level.layout.spawn);
+
+	for (var i = 0; i < config.gridCells.width; i++) {
+		this.grid[i] = [];
+		for (var j = 0; j < config.gridCells.height; j++) {
+			this.grid[i][j] = 0;
+		}
+	}
+	this.grid[startPoint.x][startPoint.y] = 1;
+
+	for (var i = 0; i < this.level.layout.pathPoints.length; i++) {
+		var nextPoint = this.level.layout.pathPoints[i];
+		var moved = true;
+		while (moved){
+			moved = false;
+			//Going left
+			if (startPoint.x - nextPoint.x >= 1) {
+				moved = true;
+				startPoint.x -= 1;
+			}
+			//Going right
+			if (startPoint.x - nextPoint.x <= -1) {
+				moved = true;
+				startPoint.x += 1;
+			}
+			//Going up
+			if (startPoint.y - nextPoint.y <= -1) {
+				moved = true;
+				startPoint.y += 1;
+			}
+			//Going down
+			if (startPoint.y - nextPoint.y >= 1) {
+				moved = true;
+				startPoint.y -= 1;
+			}
+			this.grid[startPoint.x][startPoint.y] = 1;
+		}
+		
+	}
+}
+
+Game.prototype.getSpawnPoint = function() {
+	var rawSpawn = clone(this.level.layout.spawn);
+	return {
+		x: rawSpawn.x + edges[rawSpawn.edge].x,
+		y: rawSpawn.y + edges[rawSpawn.edge].x,
+	}
+};
+
+Game.prototype.launchWave = function() {
+	
+	var currentWave = this.level.waves[this.currentWave];
+	for (var i = 0; i < currentWave.count; i++) {
+		var en = new enemy({
+			spawnPosition: this.getSpawnPoint,
+			stats: currentWave.stats
+		});
+		this.pendingEnemyList.push({
+			enemy: en,
+			delay: currentWave.delay * i
+		});
+		
+	}
+	this.currentWave++;
+};
+
+Game.prototype.onTick = function(deltaTime) {
+	//Note: filter does not modify non-objects
+	//But here that's OK because we are processing objects
+	this.pendingEnemyList.filter(function(pendingEn){
+		pendingEn.delay -= deltaTime;
+		if (pendingEn.delay <= 0) {
+			this.enemyList.push(pendingEn.enemy);
+			//Remove element from array
+			return false;
+		}
+		//Keep element in array
+		return true;
+	})
+	this.enemyList.map(function(en){
+		//console.log(en);
+		en.onTick(deltaTime);
+		render.strokeRect(en.position.x, en.position.y, en.stats.size, en.stats.size);
+		//return true;
+	});
+
+	this.towerList.map(function(twr){
+		twr.onTick(deltaTime);
+	});
+};
+
 
 var animationFrameId = null;
 var lastframe = 0;
+function initGameTick(timestamp) {
+	lastframe = timestamp;
+	requestAnimationFrame(gameTick);
+}
+
 function gameTick(timestamp) {
-	var render = config.game.canvasRender;
+	var render = config.canvasRender;
 	var deltaTime = timestamp - lastframe;
+	var fps = 1000/deltaTime;
 	render.clearRect(0,0,
-		config.game.canvas.width,
-		config.game.canvas.height);
+		config.canvas.width,
+		config.canvas.height);
 	
 	drawGrid();
 	//console.log(timestamp);
-	console.log(deltaTime);
+	//console.log(deltaTime);
+	//console.log(game.enemyList);
+	currentGame.onTick(deltaTime);
+
+	document.getElementById("fpscounter").innerHTML = Math.round(fps);
 
 	lastframe = timestamp;
-	if (!(config.game.paused)) {
+	if (!(config.paused)) {
 		animationFrameId = window.requestAnimationFrame(gameTick);
 	}
 }
 
 function drawGrid(){
-	var render = config.game.canvasRender;
-	var size = config.game.gridSquareSize;
+	var render = config.canvasRender;
+	var size = config.gridSquareSize;
+	var grid = currentGame.grid;
 	var currentPos = {
-		x: config.game.gridOffset.x,
-		y: config.game.gridOffset.y,
+		x: config.gridOffset.x,
+		y: config.gridOffset.y,
 	};
 	//render.fillStyle("rgb(0,0,0)");
-	for (var i = 0; i < 10; i++) {
-		for (var j = 0; j < 10; j++) {
-			render.strokeRect(currentPos.x, currentPos.y, size, size);
+	for (var i = 0; i < 15; i++) {
+		for (var j = 0; j < 12; j++) {
+			if (grid[i][j] == 0) {
+				render.strokeRect(currentPos.x, currentPos.y, size, size);
+			} else {
+				//render.fillRect(currentPos.x, currentPos.y, size, size);
+			}
 
-			currentPos.x += size;
+			currentPos.y += size;
 		}
-		currentPos.y += size;
-		currentPos.x = config.game.gridOffset.x;
+		currentPos.x += size;
+		currentPos.y = config.gridOffset.y;
 	}
-}
-
-function startLevel(intLevel) {
-	game.currentLevel = new level(intLevel);
-	game.currentWave = 0;
-}
-
-function spawnEnemy(enemy){
-	enemy.position.x = game.currentLevel.data.layout.spawn.x;
-	enemy.position.y = game.currentLevel.data.layout.spawn.y;
-	//TODO: add enemy to enemyList
 }
 
 function gridToPos(gridPosition) {
@@ -103,11 +218,11 @@ function clone(obj){
 }
 
 function play(){
-	config.game.paused = false;
-	animationFrameId = window.requestAnimationFrame(gameTick);
+	config.paused = false;
+	animationFrameId = window.requestAnimationFrame(initGameTick);
 }
 
 function pause(){
-	config.game.paused = true;
+	config.paused = true;
 	window.cancelAnimationFrame(animationFrameId);
 }
