@@ -40,7 +40,10 @@ Game = function (intLevel) {
 	this.pendingEnemyList = [];
 }
 Game.prototype.buildGrid = function () {
-	var startPoint = clone(this.level.layout.spawn);
+	var startPoint = {
+		x: this.level.layout.spawn.x,
+		y: this.level.layout.spawn.y
+	}
 
 	for (var i = 0; i < config.gridCells.width; i++) {
 		this.grid[i] = [];
@@ -82,10 +85,10 @@ Game.prototype.buildGrid = function () {
 }
 
 Game.prototype.getSpawnPoint = function() {
-	var rawSpawn = clone(this.level.layout.spawn);
+	var rawSpawn = this.level.layout.spawn;
 	return {
 		x: rawSpawn.x + edges[rawSpawn.edge].x,
-		y: rawSpawn.y + edges[rawSpawn.edge].x,
+		y: rawSpawn.y + edges[rawSpawn.edge].y,
 	}
 };
 
@@ -93,10 +96,7 @@ Game.prototype.launchWave = function() {
 	
 	var currentWave = this.level.waves[this.currentWave];
 	for (var i = 0; i < currentWave.count; i++) {
-		var en = new enemy({
-			spawnPosition: this.getSpawnPoint,
-			stats: currentWave.stats
-		});
+		var en = new enemy(currentWave.stats);
 		this.pendingEnemyList.push({
 			enemy: en,
 			delay: currentWave.delay * i
@@ -109,7 +109,7 @@ Game.prototype.launchWave = function() {
 Game.prototype.onTick = function(deltaTime) {
 	//Note: filter does not modify non-objects
 	//But here that's OK because we are processing objects
-	this.pendingEnemyList.filter(function(pendingEn){
+	this.pendingEnemyList = this.pendingEnemyList.filter(function(pendingEn){
 		pendingEn.delay -= deltaTime;
 		if (pendingEn.delay <= 0) {
 			this.enemyList.push(pendingEn.enemy);
@@ -118,11 +118,18 @@ Game.prototype.onTick = function(deltaTime) {
 		}
 		//Keep element in array
 		return true;
-	})
+	}, this);
+
 	this.enemyList.map(function(en){
+		var render = config.canvasRender;
 		//console.log(en);
 		en.onTick(deltaTime);
-		render.strokeRect(en.position.x, en.position.y, en.stats.size, en.stats.size);
+		var enPosition = en.topLeftPosition();
+		var enSize = en.stats.size * config.gridSquareSize;
+		render.strokeRect(config.gridSquareSize*(enPosition.x), 
+			config.gridSquareSize*(enPosition.y), 
+			enSize, 
+			enSize);
 		//return true;
 	});
 
@@ -175,6 +182,8 @@ function drawGrid(){
 			if (grid[i][j] == 0) {
 				render.strokeRect(currentPos.x, currentPos.y, size, size);
 			} else {
+				//render.strokeRect(currentPos.x, currentPos.y, size/2, size/2);
+				//render.strokeRect(currentPos.x + size/2, currentPos.y + size/2, size/2, size/2);
 				//render.fillRect(currentPos.x, currentPos.y, size, size);
 			}
 
@@ -194,19 +203,19 @@ function gridToPos(gridPosition) {
 
 edges = {
 	left: {
-		x: -0.5,
-		y: 0
+		x: 0,
+		y: 0.5
 	},
 	right: {
+		x: 1,
+		y: 0.5
+	},
+	up: {
 		x: 0.5,
 		y: 0
 	},
-	up: {
-		x: 0,
-		y: -0.5
-	},
 	down: {
-		x: 0,
+		x: 1,
 		y: 0.5
 	}
 }

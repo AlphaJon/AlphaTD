@@ -10,27 +10,39 @@ enemy = function(stats) {
 	//this.stats = clone(game.currentLevel.data.waves[game.currentWave].stats);
 	this.stats = clone(stats);
 	this.currentHealth = this.maxHealth;
-	this.position = pos;
+	this.position = {
+		x: pos.x,
+		y: pos.y
+	};
 	this.currentPathPoint = 0;
 };
 enemy.prototype.stats = clone(baseEnemyStats);
 
+enemy.prototype.topLeftPosition = function(){
+	return {
+		x: this.position.x - (this.stats.size /2),
+		y: this.position.y - (this.stats.size /2)
+	};
+}
+
 enemy.prototype.move = function(factor){
 	var size = config.gridSquareSize;
-	var destination = currentGame.layout.pathPoints[this.currentPathPoint];
+	var destination = currentGame.level.layout.pathPoints[this.currentPathPoint];
 	var deltaPosition = {
-		x: destination.x - this.position.x,
-		y: destination.y - this.position.y
+		x: destination.x + 0.5 - this.position.x,
+		y: destination.y + 0.5 - this.position.y
 	}
 	//is in (-pi, pi), pi inclusive
-	var angle = Math.atan2(y,x);
+	var angle = Math.atan2(deltaPosition.y,deltaPosition.x) + (Math.random()-0.5)*2;
 	this.position.x = this.position.x + Math.cos(angle)* factor * this.stats.speed;
 	this.position.y = this.position.y + Math.sin(angle)* factor * this.stats.speed;
 
-	if (deltaPosition.x * deltaPosition.x
-		+ deltaPosition.y * deltaPosition.y <= 1) {
+	if ((deltaPosition.x * deltaPosition.x)
+		+ (deltaPosition.y * deltaPosition.y) <= 0.01) {
+		//console.log("x:"+this.position.x+", y: "+this.position.y);
 		this.currentPathPoint++;
 	}
+	//console.log(this.position);
 };
 
 enemy.prototype.onTick = function(deltaTime){

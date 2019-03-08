@@ -1,14 +1,11 @@
 config.canvas.onclick = function(event){
 	//console.log(config.canvas);
 	//console.log(event);
-	var en = new enemy();
-	enS = en;
-	//enS.position = {};
-	//enS.position.x = event.x - config.canvas.offsetLeft;
-	//enS.position.y = event.y - config.canvas.offsetTop;
-	enS.stats.size = 10 + 5*currentGame.enemyList.length;
+	var wave = currentGame.level.waves[currentGame.currentWave];
+	var en = new enemy(wave.stats);
+	console.log(wave);
 	currentGame.enemyList.push(en);
-	//console.log(en);
+	console.log(en.position);
 	console.log(currentGame.enemyList);
 }
 
@@ -18,7 +15,14 @@ document.getElementById('level1').onclick = function(event){
 }
 
 document.getElementById('wave').onclick = function(event){
-	var level = currentGame.currentLevel;
-	console.log(level);
-	level.launchWave();
+	//var level = currentGame.currentLevel;
+	//console.log(level);
+	currentGame.launchWave();
+	currentGame.currentWave--;
+}
+
+function drawSquare(x,y,size) {
+	var render = config.canvasRender;
+	var gridSize = config.gridSquareSize;
+	render.fillRect(x*gridSize, y*gridSize, size*gridSize, size*gridSize);
 }
