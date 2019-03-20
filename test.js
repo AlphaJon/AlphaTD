@@ -2,7 +2,7 @@ config.canvas.onclick = function(event){
 	//console.log(config.canvas);
 	//console.log(event);
 	var wave = currentGame.level.waves[currentGame.currentWave];
-	var en = new enemy(wave.stats);
+	var en = new Enemy(wave.stats);
 	console.log(wave);
 	currentGame.enemyList.push(en);
 	console.log(en.position);

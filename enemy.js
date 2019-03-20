@@ -5,29 +5,34 @@ baseEnemyStats = {
 	effects: []
 };
 
-enemy = function(stats) {
+Enemy = function(stats) {
 	var pos = currentGame.getSpawnPoint();
 	//this.stats = clone(game.currentLevel.data.waves[game.currentWave].stats);
 	this.stats = clone(stats);
-	this.currentHealth = this.maxHealth;
+	this.currentHealth = this.stats.maxHealth;
 	this.position = {
 		x: pos.x,
 		y: pos.y
 	};
 	this.currentPathPoint = 0;
+	this.endReached = false;
 };
-enemy.prototype.stats = clone(baseEnemyStats);
+Enemy.prototype.stats = clone(baseEnemyStats);
 
-enemy.prototype.topLeftPosition = function(){
+Enemy.prototype.topLeftPosition = function(){
 	return {
 		x: this.position.x - (this.stats.size /2),
 		y: this.position.y - (this.stats.size /2)
 	};
 }
 
-enemy.prototype.move = function(factor){
+Enemy.prototype.move = function(factor){
+	if (this.endReached) {
+		return;
+	}
 	var size = config.gridSquareSize;
-	var destination = currentGame.level.layout.pathPoints[this.currentPathPoint];
+	var points = currentGame.level.layout.pathPoints
+	var destination = points[this.currentPathPoint];
 	var deltaPosition = {
 		x: destination.x + 0.5 - this.position.x,
 		y: destination.y + 0.5 - this.position.y
@@ -41,13 +46,22 @@ enemy.prototype.move = function(factor){
 		+ (deltaPosition.y * deltaPosition.y) <= 0.01) {
 		//console.log("x:"+this.position.x+", y: "+this.position.y);
 		this.currentPathPoint++;
+		console.log(this.currentPathPoint);
+		console.log(points);
+		if (this.currentPathPoint == points.length) {
+			this.endReached = true;
+		}
 	}
 	//console.log(this.position);
 };
 
-enemy.prototype.onTick = function(deltaTime){
+Enemy.prototype.onTick = function(deltaTime){
 	this.move(deltaTime/1000);
 	//console.log(config.gridSquareSize * deltaTime/1000 * 60);
 	
 	//this.position.y += deltaTime/1000;
+};
+
+Enemy.prototype.isValid = function() {
+	return !(this.endReached) && this.currentHealth > 0;
 };

@@ -1,3 +1,9 @@
+logger = {
+	log: function(thing){
+		console.log(thing);
+	}
+}
+
 config = {};
 
 config.paused = true;
@@ -96,7 +102,7 @@ Game.prototype.launchWave = function() {
 	
 	var currentWave = this.level.waves[this.currentWave];
 	for (var i = 0; i < currentWave.count; i++) {
-		var en = new enemy(currentWave.stats);
+		var en = new Enemy(currentWave.stats);
 		this.pendingEnemyList.push({
 			enemy: en,
 			delay: currentWave.delay * i
@@ -120,7 +126,7 @@ Game.prototype.onTick = function(deltaTime) {
 		return true;
 	}, this);
 
-	this.enemyList.map(function(en){
+	this.enemyList = this.enemyList.filter(function(en){
 		var render = config.canvasRender;
 		//console.log(en);
 		en.onTick(deltaTime);
@@ -130,8 +136,9 @@ Game.prototype.onTick = function(deltaTime) {
 			config.gridSquareSize*(enPosition.y), 
 			enSize, 
 			enSize);
+		return en.isValid();
 		//return true;
-	});
+	}, this);
 
 	this.towerList.map(function(twr){
 		twr.onTick(deltaTime);
