@@ -12,8 +12,7 @@ Enemy = function(stats) {
 	this.currentHealth = this.stats.maxHealth;
 	this.position = {
 		x: pos.x,
-		y: pos.y
-	};
+		y: pos.y};
 	this.currentPathPoint = 0;
 	this.endReached = false;
 };
@@ -33,17 +32,15 @@ Enemy.prototype.move = function(factor){
 	var size = config.gridSquareSize;
 	var points = currentGame.level.layout.pathPoints
 	var destination = points[this.currentPathPoint];
-	var deltaPosition = {
-		x: destination.x + 0.5 - this.position.x,
-		y: destination.y + 0.5 - this.position.y
-	}
-	//is in (-pi, pi), pi inclusive
-	var angle = Math.atan2(deltaPosition.y,deltaPosition.x) + (Math.random()-0.5)*2;
-	this.position.x = this.position.x + Math.cos(angle)* factor * this.stats.speed;
-	this.position.y = this.position.y + Math.sin(angle)* factor * this.stats.speed;
+	var delta = new Vector(
+		destination.x + 0.5 - this.position.x,
+		destination.y + 0.5 - this.position.y
+	);
+	var baseVector = delta.normalize();
+	this.position.x = this.position.x + baseVector.x * factor * this.stats.speed;
+	this.position.y = this.position.y + baseVector.y * factor * this.stats.speed;
 
-	if ((deltaPosition.x * deltaPosition.x)
-		+ (deltaPosition.y * deltaPosition.y) <= 0.01) {
+	if (delta.weight() <= 0.01) {
 		//console.log("x:"+this.position.x+", y: "+this.position.y);
 		this.currentPathPoint++;
 		console.log(this.currentPathPoint);
