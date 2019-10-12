@@ -1,22 +1,22 @@
-baseEnemyStats = {
-	maxHealth: 0,
-	speed: 0,
-	size: 0,
-	effects: []
-};
 
 Enemy = function(stats) {
 	var pos = currentGame.getSpawnPoint();
 	//this.stats = clone(game.currentLevel.data.waves[game.currentWave].stats);
-	this.stats = clone(stats);
+	this.stats = {
+		maxHealth: 0,
+		speed: 1,
+		size: 0.5,
+		effects: []
+	};
 	this.currentHealth = this.stats.maxHealth;
 	this.position = {
 		x: pos.x,
-		y: pos.y};
+		y: pos.y
+	};
 	this.currentPathPoint = 0;
 	this.endReached = false;
 };
-Enemy.prototype.stats = clone(baseEnemyStats);
+Enemy.prototype.stats = {};
 
 Enemy.prototype.topLeftPosition = function(){
 	return {
@@ -33,8 +33,8 @@ Enemy.prototype.move = function(factor){
 	var points = currentGame.level.layout.pathPoints
 	var destination = points[this.currentPathPoint];
 	var delta = new Vector(
-		destination.x + 0.5 - this.position.x,
-		destination.y + 0.5 - this.position.y
+		destination.x - this.position.x,
+		destination.y - this.position.y
 	);
 	var baseVector = delta.normalize();
 	this.position.x = this.position.x + baseVector.x * factor * this.stats.speed;

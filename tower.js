@@ -17,24 +17,24 @@ baseTowerStats = {
 	}
 };
 
-tower = function () {
+Tower = function () {
 	console.log(this);
 	//this = baseTowerStats;
 };
-tower.prototype = baseTowerStats;
+Tower.prototype.rawStats = baseTowerStats;
 
-tower.prototype.fire = function(enemy, count = 1) {
-	tmpProjectile = new projectile(enemy);
+Tower.prototype.fireAtEnemy = function(enemy, count = 1) {
+	tmpProjectile = new Projectile(enemy);
 	tmpProjectile.stats = this.stats.projectileStats;
 	tmpProjectile.count = count;
 	tmpProjectile.position = gridToPos(this.gridPosition);
 };
 
-tower.prototype.onTick = function(first_argument) {
+Tower.prototype.onTick = function(first_argument) {
 	this.currentProjectileProgress += attackSpeed / config.ticksPerSecond;
 	if (this.currentProjectileProgress >= 1) {
 		var count = Math.floor(this.currentProjectileProgress);
-		this.fire(/* TODO */null, count);
+		this.fireAtEnemy(/* TODO */null, count);
 		this.currentProjectileProgress -= count;
 	}
 };
@@ -50,15 +50,15 @@ baseProjectileStats = {
 baseProjectileStats.stats = baseTowerStats.stats.projectileStats;
 
 //Constructor function
-projectile = function(enemy){
+Projectile = function(enemy){
 	this.targetEnemy = enemy;
 }
 
-projectile.prototype.onTick = function(first_argument) {
+Projectile.prototype.onTick = function(first_argument) {
 	// body...
 };
 
-projectile.prototype.hit = function(first_argument) {
+Projectile.prototype.hit = function(first_argument) {
 	// body...
 };
 

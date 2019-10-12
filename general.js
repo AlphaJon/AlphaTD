@@ -8,10 +8,11 @@ config = {};
 
 config.paused = true;
 config.gridSquareSize = 32; //size of one grid square
+//shift from up-left corner
 config.gridOffset = {
 	x: 0,
 	y: 0
-}; //shift from up-left corner
+}; 
 config.gridCells = {
 	width: 15,
 	height: 12
@@ -25,20 +26,20 @@ currentGame = null;
  * Starts a new game based on a given level, builds level from levelData
  * level: {
  	layout: {
- 		spawn: position+edge, 
+ 		spawn: position, 
  		pathPoints: [position]
  		},
  	},
  	waves: [{
 		count: integer,
 		delay: integer,
-		stats: object
+		enemyStats: object
  	}]
  */
 Game = function (intLevel) {
 
 	this.level = clone(levelData[intLevel]);
-	this.currentWave = 0;
+	this.waveNumber = 0;
 	this.grid = [];
 	this.buildGrid();
 	this.towerList = [];
@@ -47,8 +48,8 @@ Game = function (intLevel) {
 }
 Game.prototype.buildGrid = function () {
 	var startPoint = {
-		x: this.level.layout.spawn.x,
-		y: this.level.layout.spawn.y
+		x: Math.floor(this.level.layout.spawn.x),
+		y: Math.floor(this.level.layout.spawn.y)
 	}
 
 	for (var i = 0; i < config.gridCells.width; i++) {
@@ -60,7 +61,10 @@ Game.prototype.buildGrid = function () {
 	this.grid[startPoint.x][startPoint.y] = 1;
 
 	for (var i = 0; i < this.level.layout.pathPoints.length; i++) {
-		var nextPoint = this.level.layout.pathPoints[i];
+		var nextPoint = {
+			x: Math.floor(this.level.layout.pathPoints[i].x),
+			y: Math.floor(this.level.layout.pathPoints[i].y)
+		};
 		var moved = true;
 		while (moved){
 			moved = false;
@@ -90,26 +94,29 @@ Game.prototype.buildGrid = function () {
 	}
 }
 
+Game.prototype.getCurrentWave = function() {
+	return this.level.waves[this.waveNumber];
+};
+
 Game.prototype.getSpawnPoint = function() {
 	var rawSpawn = this.level.layout.spawn;
 	return {
-		x: rawSpawn.x + edges[rawSpawn.edge].x,
-		y: rawSpawn.y + edges[rawSpawn.edge].y,
+		x: rawSpawn.x,
+		y: rawSpawn.y,
 	}
 };
 
-Game.prototype.launchWave = function() {
-	
-	var currentWave = this.level.waves[this.currentWave];
-	for (var i = 0; i < currentWave.count; i++) {
-		var en = new Enemy(currentWave.stats);
+Game.prototype.launchNextWave = function() {
+	var wave = this.getCurrentWave;
+	for (var i = 0; i < wave.enemyCount; i++) {
+		var en = new Enemy(wave.stats);
 		this.pendingEnemyList.push({
 			enemy: en,
-			delay: currentWave.delay * i
+			delay: wave.enemydelay * i
 		});
 		
 	}
-	this.currentWave++;
+	this.waveNumber++;
 };
 
 Game.prototype.onTick = function(deltaTime) {
@@ -127,15 +134,9 @@ Game.prototype.onTick = function(deltaTime) {
 	}, this);
 
 	this.enemyList = this.enemyList.filter(function(en){
-		var render = config.canvasRender;
 		//console.log(en);
 		en.onTick(deltaTime);
-		var enPosition = en.topLeftPosition();
-		var enSize = en.stats.size * config.gridSquareSize;
-		render.strokeRect(config.gridSquareSize*(enPosition.x), 
-			config.gridSquareSize*(enPosition.y), 
-			enSize, 
-			enSize);
+		en.render(config.canvasRender);
 		return en.isValid();
 		//return true;
 	}, this);
@@ -161,7 +162,7 @@ function gameTick(timestamp) {
 		config.canvas.width,
 		config.canvas.height);
 	
-	drawGrid();
+	currentGame.render(config.canvasRender);
 	//console.log(timestamp);
 	//console.log(deltaTime);
 	//console.log(game.enemyList);
@@ -175,32 +176,6 @@ function gameTick(timestamp) {
 	}
 }
 
-function drawGrid(){
-	var render = config.canvasRender;
-	var size = config.gridSquareSize;
-	var grid = currentGame.grid;
-	var currentPos = {
-		x: config.gridOffset.x,
-		y: config.gridOffset.y,
-	};
-	//render.fillStyle("rgb(0,0,0)");
-	for (var i = 0; i < 15; i++) {
-		for (var j = 0; j < 12; j++) {
-			if (grid[i][j] == 0) {
-				render.strokeRect(currentPos.x, currentPos.y, size, size);
-			} else {
-				//render.strokeRect(currentPos.x, currentPos.y, size/2, size/2);
-				//render.strokeRect(currentPos.x + size/2, currentPos.y + size/2, size/2, size/2);
-				//render.fillRect(currentPos.x, currentPos.y, size, size);
-			}
-
-			currentPos.y += size;
-		}
-		currentPos.x += size;
-		currentPos.y = config.gridOffset.y;
-	}
-}
-
 function gridToPos(gridPosition) {
 	return {
 		x: gridPosition.x * config.gridSquareSize - (config.gridSquareSize/2) + config.gridOffset,
@@ -208,27 +183,9 @@ function gridToPos(gridPosition) {
 	};
 }
 
-edges = {
-	left: {
-		x: 0,
-		y: 0.5
-	},
-	right: {
-		x: 1,
-		y: 0.5
-	},
-	up: {
-		x: 0.5,
-		y: 0
-	},
-	down: {
-		x: 1,
-		y: 0.5
-	}
-}
-
-//As recommended by StackOverflow
-//Note: do not use if it contains objects with functions, or Date objects
+//Thank you StackOverflow
+//Note: do not use on objects than contain functions, or Date objects
+//Also avoid using in CPU-intensive code unless necessary, performance cost over manually creating objects
 function clone(obj){
 	return JSON.parse(JSON.stringify(obj));
 }

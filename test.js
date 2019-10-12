@@ -1,8 +1,8 @@
 config.canvas.onclick = function(event){
 	//console.log(config.canvas);
 	//console.log(event);
-	var wave = currentGame.level.waves[currentGame.currentWave];
-	var en = new Enemy(wave.stats);
+	var wave = currentGame.getCurrentWave();
+	var en = new Enemy(wave.enemyStats);
 	console.log(wave);
 	currentGame.enemyList.push(en);
 	console.log(en.position);
@@ -10,14 +10,15 @@ config.canvas.onclick = function(event){
 }
 
 document.getElementById('level1').onclick = function(event){
-	console.log('Level 1 start');
+	console.log('Level 1 loaded');
 	currentGame = new Game(0);
 }
 
 document.getElementById('wave').onclick = function(event){
 	//var level = currentGame.currentLevel;
 	//console.log(level);
-	currentGame.launchWave();
+	var wave = currentGame.getCurrentWave();
+	currentGame.launchNextWave();
 	currentGame.currentWave--;
 }
 
