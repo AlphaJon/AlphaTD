@@ -1,4 +1,4 @@
-config.canvas.onclick = function(event){
+Config.canvas.onclick = function(event){
 	//console.log(config.canvas);
 	//console.log(event);
 	var wave = currentGame.getCurrentWave();
@@ -19,11 +19,11 @@ document.getElementById('wave').onclick = function(event){
 	//console.log(level);
 	var wave = currentGame.getCurrentWave();
 	currentGame.launchNextWave();
-	currentGame.currentWave--;
+	currentGame.waveNumber--;
 }
 
 function drawSquare(x,y,size) {
-	var render = config.canvasRender;
-	var gridSize = config.gridSquareSize;
+	var render = Config.canvasRender;
+	var gridSize = Config.gridSquareSize;
 	render.fillRect(x*gridSize, y*gridSize, size*gridSize, size*gridSize);
 }
