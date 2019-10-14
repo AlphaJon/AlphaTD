@@ -85,7 +85,7 @@ levelDataArray[0] = {
         { x: 5.5, y: 3.5 },
         { x: 5.5, y: 8.5 },
         { x: 12.5, y: 8.5 },
-        { x: 12.5, y: 12.5 }
+        { x: 12.5, y: 12 }
     ],
     waves: [
         {
@@ -100,3 +100,4 @@ levelDataArray[0] = {
         }
     ]
 };
+//# sourceMappingURL=levelData.js.map

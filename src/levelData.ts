@@ -61,7 +61,7 @@ class Level implements Renderable{
 
 	render(ctx: CanvasRenderingContext2D): void {
 		var size = Config.gridSquareSize;
-		var currentPos = {
+		var currentPos: PixelPosition = {
 			x: Config.gridOffset.x,
 			y: Config.gridOffset.y,
 		};
@@ -107,7 +107,7 @@ levelDataArray[0] = {
 		{x: 5.5, y: 3.5},
 		{x: 5.5, y: 8.5},
 		{x: 12.5, y: 8.5},
-		{x: 12.5, y: 12.5}
+		{x: 12.5, y: 12}
 	],
 	waves: [
 		{

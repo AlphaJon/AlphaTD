@@ -16,3 +16,4 @@ var Vector = /** @class */ (function () {
     };
     return Vector;
 }());
+//# sourceMappingURL=vector.js.map

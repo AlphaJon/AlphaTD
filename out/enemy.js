@@ -52,7 +52,11 @@ var Enemy = /** @class */ (function () {
         var leftPx = topLeftCoords.x * Config.gridSquareSize + Config.gridOffset.x;
         var topPx = topLeftCoords.y * Config.gridSquareSize + Config.gridOffset.y;
         var sizePx = this.size * Config.gridSquareSize;
-        ctx.strokeRect(leftPx, topPx, sizePx, sizePx);
+        var colorHealth = (this.currentHealth / this.maxHealth) * 120;
+        var colorStr = "hsl(" + colorHealth + ", 100%, 50%)";
+        ctx.fillStyle = colorStr;
+        ctx.fillRect(leftPx, topPx, sizePx, sizePx);
+        ctx.fillStyle = "#000000";
     };
     Enemy.prototype.topLeftPosition = function () {
         return {
@@ -62,3 +66,4 @@ var Enemy = /** @class */ (function () {
     };
     return Enemy;
 }());
+//# sourceMappingURL=enemy.js.map

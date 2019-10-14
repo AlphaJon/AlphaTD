@@ -1,7 +1,7 @@
 class Config {
 	static paused = true;
 	static gridSquareSize = 32; //size of one grid square in pixels
-	static gridOffset = { //shift from up-left corner in pixels
+	static gridOffset: PixelPosition = { //shift from up-left corner in pixels
 		x: 0,
 		y: 0
 	};
@@ -18,6 +18,15 @@ let currentGame:Game = null;
 interface GridPosition {
 	x: number;
 	y: number;
+}
+
+interface PixelPosition {
+	x: number;
+	y: number;
+}
+
+interface Cloneable {
+	clone(): any;
 }
 
 interface Tickable {
@@ -48,6 +57,34 @@ class Game implements Renderable, Tickable{
 	public getCurrentWave():WaveData {
 		return this.level.waves[this.waveNumber];
 	}
+
+	public getEnemiesInRange(position: GridPosition, range: number): Enemy[]{
+		let rangeSquared = range*range;
+		let result = this.enemyList.filter(function(en){
+			//Inside this function, this = position
+			let enGridPos = en.position;
+			let xdiff = Math.abs(this.x - enGridPos.x);
+			let ydiff = Math.abs(this.y - enGridPos.y);
+			return xdiff*xdiff + ydiff*ydiff <= rangeSquared;
+		}, position);
+		return result;
+	}
+
+	//public getEnemiesInRange(position: GridPosition, range: number): Enemy[]{
+	//	console.log(position);
+	//	let enemiesInRange:Enemy[] = [];
+	//	let rangeSquared = range*range;
+	//	for (let index = 0; index < this.enemyList.length; index++) {
+	//		const en = this.enemyList[index];
+	//		let xdiff = Math.abs(position.x - en.position.x);
+	//		let ydiff = Math.abs(position.y - en.position.y);
+	//		console.log("" + xdiff + ", " + ydiff);
+	//		if (xdiff*xdiff + ydiff*ydiff <= rangeSquared) {
+	//			enemiesInRange.push(en);
+	//		}
+	//	}
+	//	return enemiesInRange;
+	//}
 
 	public getSpawnPoint():GridPosition {
 		var rawSpawn = this.level.spawnPoint;
@@ -94,6 +131,7 @@ class Game implements Renderable, Tickable{
 	
 		this.towerList.map(function(twr){
 			twr.onTick(deltaTime);
+			twr.render(Config.canvasRender);
 		});
 	}
 
@@ -132,17 +170,24 @@ function gameTick(timestamp: number) {
 	}
 }
 
-function gridToPos(gridPosition: GridPosition) {
+function gridToPos(gridPosition: GridPosition): PixelPosition {
 	return {
-		x: gridPosition.x * Config.gridSquareSize - (Config.gridSquareSize/2) + Config.gridOffset.x,
-		y: gridPosition.y * Config.gridSquareSize - (Config.gridSquareSize/2) + Config.gridOffset.y
+		x: gridPosition.x * Config.gridSquareSize + Config.gridOffset.x,
+		y: gridPosition.y * Config.gridSquareSize + Config.gridOffset.y
 	};
+}
+
+function posToGrid(position: PixelPosition): GridPosition {
+	return {
+		x: Math.floor((position.x - Config.gridOffset.x)/Config.gridSquareSize),
+		y: Math.floor((position.y - Config.gridOffset.y)/Config.gridSquareSize)
+	}
 }
 
 //Thank you StackOverflow
 //Note: do not use on objects than contain functions, or Date objects
 //Also avoid using in CPU-intensive code unless necessary, performance cost over manually creating objects
-function clone(obj: any): any {
+function clone<T>(obj: T): T {
 	return JSON.parse(JSON.stringify(obj));
 }
 

@@ -39,7 +39,7 @@ class Enemy implements Renderable, Tickable{
 		return !(this.endReached) && this.currentHealth > 0;
 	};
 
-	public move(factor){
+	public move(factor: number){
 		if (this.endReached) {
 			return;
 		}
@@ -78,10 +78,14 @@ class Enemy implements Renderable, Tickable{
 		var leftPx = topLeftCoords.x * Config.gridSquareSize + Config.gridOffset.x;
 		var topPx = topLeftCoords.y * Config.gridSquareSize + Config.gridOffset.y;
 		var sizePx = this.size * Config.gridSquareSize;
-		ctx.strokeRect(leftPx, topPx, sizePx, sizePx);
+		var colorHealth = (this.currentHealth/this.maxHealth)*120;
+		var colorStr = `hsl(${colorHealth}, 100%, 50%)`;
+		ctx.fillStyle = colorStr;
+		ctx.fillRect(leftPx, topPx, sizePx, sizePx);
+		ctx.fillStyle = "#000000";
 	}
 
-	public topLeftPosition(){
+	public topLeftPosition(): GridPosition{
 		return {
 			x: this.position.x - (this.size /2),
 			y: this.position.y - (this.size /2)

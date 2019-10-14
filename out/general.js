@@ -32,6 +32,32 @@ var Game = /** @class */ (function () {
     Game.prototype.getCurrentWave = function () {
         return this.level.waves[this.waveNumber];
     };
+    Game.prototype.getEnemiesInRange = function (position, range) {
+        var rangeSquared = range * range;
+        var result = this.enemyList.filter(function (en) {
+            //Inside this function, this = position
+            var enGridPos = en.position;
+            var xdiff = Math.abs(this.x - enGridPos.x);
+            var ydiff = Math.abs(this.y - enGridPos.y);
+            return xdiff * xdiff + ydiff * ydiff <= rangeSquared;
+        }, position);
+        return result;
+    };
+    //public getEnemiesInRange(position: GridPosition, range: number): Enemy[]{
+    //	console.log(position);
+    //	let enemiesInRange:Enemy[] = [];
+    //	let rangeSquared = range*range;
+    //	for (let index = 0; index < this.enemyList.length; index++) {
+    //		const en = this.enemyList[index];
+    //		let xdiff = Math.abs(position.x - en.position.x);
+    //		let ydiff = Math.abs(position.y - en.position.y);
+    //		console.log("" + xdiff + ", " + ydiff);
+    //		if (xdiff*xdiff + ydiff*ydiff <= rangeSquared) {
+    //			enemiesInRange.push(en);
+    //		}
+    //	}
+    //	return enemiesInRange;
+    //}
     Game.prototype.getSpawnPoint = function () {
         var rawSpawn = this.level.spawnPoint;
         return {
@@ -72,6 +98,7 @@ var Game = /** @class */ (function () {
         }, this);
         this.towerList.map(function (twr) {
             twr.onTick(deltaTime);
+            twr.render(Config.canvasRender);
         });
     };
     Game.prototype.render = function (ctx) {
@@ -103,8 +130,14 @@ function gameTick(timestamp) {
 }
 function gridToPos(gridPosition) {
     return {
-        x: gridPosition.x * Config.gridSquareSize - (Config.gridSquareSize / 2) + Config.gridOffset.x,
-        y: gridPosition.y * Config.gridSquareSize - (Config.gridSquareSize / 2) + Config.gridOffset.y
+        x: gridPosition.x * Config.gridSquareSize + Config.gridOffset.x,
+        y: gridPosition.y * Config.gridSquareSize + Config.gridOffset.y
+    };
+}
+function posToGrid(position) {
+    return {
+        x: Math.floor((position.x - Config.gridOffset.x) / Config.gridSquareSize),
+        y: Math.floor((position.y - Config.gridOffset.y) / Config.gridSquareSize)
     };
 }
 //Thank you StackOverflow
@@ -121,3 +154,4 @@ function pause() {
     Config.paused = true;
     window.cancelAnimationFrame(animationFrameId);
 }
+//# sourceMappingURL=general.js.map
