@@ -34,8 +34,11 @@ function testSpawnEnemy() {
     console.log(currentGame.enemyList);
 }
 function testSpawnTower(position) {
-    var twr = new Tower(defaultTower);
-    twr.setPosition(position);
-    currentGame.towerList.push(twr);
+    if (currentGame.money >= defaultTower.cost) {
+        currentGame.money -= defaultTower.cost;
+        var twr = new Tower(defaultTower);
+        twr.setPosition(position);
+        currentGame.towerList.push(twr);
+    }
 }
 //# sourceMappingURL=test.js.map

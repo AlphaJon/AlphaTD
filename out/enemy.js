@@ -6,7 +6,7 @@ var Enemy = /** @class */ (function () {
         this.speed = stats.speed;
         this.size = stats.size;
         this.effects = stats.effects;
-        this.currentHealth = this.maxHealth;
+        this._currentHealth = this.maxHealth;
         this.position = {
             x: pos.x,
             y: pos.y
@@ -14,8 +14,21 @@ var Enemy = /** @class */ (function () {
         this.currentPathPoint = 0;
         this.endReached = false;
     }
+    Object.defineProperty(Enemy.prototype, "currentHealth", {
+        get: function () {
+            return this._currentHealth;
+        },
+        set: function (value) {
+            this._currentHealth = value;
+            if (this._currentHealth <= 0) {
+                //TODO: setup destruction?
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
     Enemy.prototype.isValid = function () {
-        return !(this.endReached) && this.currentHealth > 0;
+        return !(this.endReached) && this._currentHealth > 0;
     };
     ;
     Enemy.prototype.move = function (factor) {
@@ -52,7 +65,7 @@ var Enemy = /** @class */ (function () {
         var leftPx = topLeftCoords.x * Config.gridSquareSize + Config.gridOffset.x;
         var topPx = topLeftCoords.y * Config.gridSquareSize + Config.gridOffset.y;
         var sizePx = this.size * Config.gridSquareSize;
-        var colorHealth = (this.currentHealth / this.maxHealth) * 120;
+        var colorHealth = (this._currentHealth / this.maxHealth) * 120;
         var colorStr = "hsl(" + colorHealth + ", 100%, 50%)";
         ctx.fillStyle = colorStr;
         ctx.fillRect(leftPx, topPx, sizePx, sizePx);

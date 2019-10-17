@@ -2,6 +2,7 @@ interface EnemyData {
 	maxHealth: number;
 	speed: number;
 	size: number;
+	worth: number;
 	effects: any[];
 }
 
@@ -9,13 +10,24 @@ class Enemy implements Renderable, Tickable{
 	
 	public position: GridPosition;
 	public maxHealth: number;
-	public currentHealth: number;
+	private _currentHealth: number;
 	public speed: number;
 	public size: number;
 	public effects: any[]; //TODO
 
 	private currentPathPoint: number;
 	private endReached: boolean;
+
+	get currentHealth() {
+		return this._currentHealth;
+	}
+
+	set currentHealth(value: number) {
+		this._currentHealth = value;
+		if (this._currentHealth <= 0){
+			//TODO: setup destruction?
+		}
+	}
 
 	constructor(stats: EnemyData) {
 		var pos = currentGame.getSpawnPoint();
@@ -26,7 +38,7 @@ class Enemy implements Renderable, Tickable{
 		this.size = stats.size;
 		this.effects = stats.effects;
 
-		this.currentHealth = this.maxHealth;
+		this._currentHealth = this.maxHealth;
 		this.position = {
 			x: pos.x,
 			y: pos.y
@@ -36,7 +48,7 @@ class Enemy implements Renderable, Tickable{
 	}
 
 	public isValid() {
-		return !(this.endReached) && this.currentHealth > 0;
+		return !(this.endReached) && this._currentHealth > 0;
 	};
 
 	public move(factor: number){
@@ -78,7 +90,7 @@ class Enemy implements Renderable, Tickable{
 		var leftPx = topLeftCoords.x * Config.gridSquareSize + Config.gridOffset.x;
 		var topPx = topLeftCoords.y * Config.gridSquareSize + Config.gridOffset.y;
 		var sizePx = this.size * Config.gridSquareSize;
-		var colorHealth = (this.currentHealth/this.maxHealth)*120;
+		var colorHealth = (this._currentHealth/this.maxHealth)*120;
 		var colorStr = `hsl(${colorHealth}, 100%, 50%)`;
 		ctx.fillStyle = colorStr;
 		ctx.fillRect(leftPx, topPx, sizePx, sizePx);

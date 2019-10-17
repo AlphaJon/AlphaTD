@@ -3,8 +3,10 @@ class Level implements Renderable{
 	public pathPoints: GridPosition[];
 	public waves: WaveData[];
 	public grid: number[][];
+	public startingMoney: number;
 
 	constructor(data:LevelData){
+		this.startingMoney = data.startingCurrency;
 		this.spawnPoint = data.spawnPoint;
 		this.pathPoints = data.pathPoints;
 		this.waves = data.waves;
@@ -85,6 +87,7 @@ class Level implements Renderable{
 }
 
 interface LevelData {
+	startingCurrency: number;
 	spawnPoint: GridPosition;
 	pathPoints: GridPosition[];
 	waves: WaveData[];
@@ -99,6 +102,7 @@ interface WaveData {
 let levelDataArray:LevelData[] = [];
 
 levelDataArray[0] = {
+	startingCurrency: 100,
 	spawnPoint: {
 		x: 0,
 		y: 3.5,
@@ -117,6 +121,7 @@ levelDataArray[0] = {
 				maxHealth: 10,
 				speed: 1,
 				size: 0.3,
+				worth: 5,
 				effects: []
 			}
 		}

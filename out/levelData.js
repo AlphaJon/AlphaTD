@@ -1,5 +1,6 @@
 var Level = /** @class */ (function () {
     function Level(data) {
+        this.startingMoney = data.startingCurrency;
         this.spawnPoint = data.spawnPoint;
         this.pathPoints = data.pathPoints;
         this.waves = data.waves;
@@ -54,7 +55,7 @@ var Level = /** @class */ (function () {
         var size = Config.gridSquareSize;
         var currentPos = {
             x: Config.gridOffset.x,
-            y: Config.gridOffset.y
+            y: Config.gridOffset.y,
         };
         //ctx.fillStyle("rgb(0,0,0)");
         for (var i = 0; i < 15; i++) {
@@ -77,9 +78,10 @@ var Level = /** @class */ (function () {
 }());
 var levelDataArray = [];
 levelDataArray[0] = {
+    startingCurrency: 100,
     spawnPoint: {
         x: 0,
-        y: 3.5
+        y: 3.5,
     },
     pathPoints: [
         { x: 5.5, y: 3.5 },
@@ -95,6 +97,7 @@ levelDataArray[0] = {
                 maxHealth: 10,
                 speed: 1,
                 size: 0.3,
+                worth: 5,
                 effects: []
             }
         }

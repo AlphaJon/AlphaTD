@@ -45,9 +45,20 @@ class Game implements Renderable, Tickable{
 	public towerList: Tower[];
 	public enemyList: Enemy[];
 	public pendingEnemyList: {enemy:Enemy, delay:number}[];
+	private _money: number;
+
+	get money(): number{
+		return this._money;
+	}
+
+	set money(value: number){
+		this._money = value;
+		document.querySelector("#moneydisplay").innerHTML = "" + value;
+	}
 
 	constructor(intLevel:number) {
 		this.level = new Level(levelDataArray[intLevel]);
+		this.money = this.level.startingMoney;
 		this.waveNumber = 0;
 		this.towerList = [];
 		this.enemyList = [];
@@ -162,7 +173,7 @@ function gameTick(timestamp: number) {
 	//console.log(game.enemyList);
 	currentGame.onTick(deltaTime);
 
-	document.getElementById("fpscounter").innerHTML = Math.round(fps) as unknown as string;
+	document.getElementById("fpscounter").innerHTML = "" + Math.round(fps);
 
 	lastframe = timestamp;
 	if (!(Config.paused)) {

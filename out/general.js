@@ -24,11 +24,23 @@ var Game = /** @class */ (function () {
     function Game(intLevel) {
         this.waveNumber = 0;
         this.level = new Level(levelDataArray[intLevel]);
+        this.money = this.level.startingMoney;
         this.waveNumber = 0;
         this.towerList = [];
         this.enemyList = [];
         this.pendingEnemyList = [];
     }
+    Object.defineProperty(Game.prototype, "money", {
+        get: function () {
+            return this._money;
+        },
+        set: function (value) {
+            this._money = value;
+            document.querySelector("#moneydisplay").innerHTML = "" + value;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Game.prototype.getCurrentWave = function () {
         return this.level.waves[this.waveNumber];
     };
@@ -62,7 +74,7 @@ var Game = /** @class */ (function () {
         var rawSpawn = this.level.spawnPoint;
         return {
             x: rawSpawn.x,
-            y: rawSpawn.y
+            y: rawSpawn.y,
         };
     };
     Game.prototype.launchNextWave = function () {
@@ -122,7 +134,7 @@ function gameTick(timestamp) {
     //console.log(deltaTime);
     //console.log(game.enemyList);
     currentGame.onTick(deltaTime);
-    document.getElementById("fpscounter").innerHTML = Math.round(fps);
+    document.getElementById("fpscounter").innerHTML = "" + Math.round(fps);
     lastframe = timestamp;
     if (!(Config.paused)) {
         animationFrameId = window.requestAnimationFrame(gameTick);

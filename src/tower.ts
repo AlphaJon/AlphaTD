@@ -8,7 +8,7 @@ interface TowerData {
 }
 
 let defaultTower:TowerData = {
-	cost: 0,
+	cost: 10,
 	attackSpeed: 5,
 	damage: 1,
 	range: 3,

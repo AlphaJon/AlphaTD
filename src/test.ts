@@ -39,7 +39,11 @@ function testSpawnEnemy() {
 }
 
 function testSpawnTower(position:GridPosition) {
-	let twr = new Tower(defaultTower);
-	twr.setPosition(position);
-	currentGame.towerList.push(twr);
+	if (currentGame.money >= defaultTower.cost) {
+		currentGame.money -= defaultTower.cost;
+		let twr = new Tower(defaultTower);
+		twr.setPosition(position);
+		currentGame.towerList.push(twr);
+	}
+	
 }
