@@ -1,3 +1,10 @@
+/// <reference path="references.ts" />
+
+import {
+	Config, Renderable, Tickable, GridPosition, Vector
+} from "./references.js";
+export {Enemy, EnemyData}
+
 interface EnemyData {
 	maxHealth: number;
 	speed: number;
@@ -30,7 +37,7 @@ class Enemy implements Renderable, Tickable{
 	}
 
 	constructor(stats: EnemyData) {
-		var pos = currentGame.getSpawnPoint();
+		var pos = Config.currentGame.getSpawnPoint();
 		//this.stats = clone(game.currentLevel.data.waves[game.currentWave].stats);
 
 		this.maxHealth = stats.maxHealth;
@@ -39,10 +46,7 @@ class Enemy implements Renderable, Tickable{
 		this.effects = stats.effects;
 
 		this._currentHealth = this.maxHealth;
-		this.position = {
-			x: pos.x,
-			y: pos.y
-		};
+		this.position = GridPosition.fromPoint(pos);
 		this.currentPathPoint = 0;
 		this.endReached = false;
 	}
@@ -56,7 +60,7 @@ class Enemy implements Renderable, Tickable{
 			return;
 		}
 		var size = Config.gridSquareSize;
-		var points = currentGame.level.pathPoints
+		var points = Config.currentGame.level.pathPoints
 		var destination = points[this.currentPathPoint];
 		var delta = new Vector(
 			destination.x - this.position.x,
@@ -86,21 +90,21 @@ class Enemy implements Renderable, Tickable{
 	};
 	
 	public render(ctx: CanvasRenderingContext2D){
-		var topLeftCoords = this.topLeftPosition();
-		var leftPx = topLeftCoords.x * Config.gridSquareSize + Config.gridOffset.x;
-		var topPx = topLeftCoords.y * Config.gridSquareSize + Config.gridOffset.y;
-		var sizePx = this.size * Config.gridSquareSize;
-		var colorHealth = (this._currentHealth/this.maxHealth)*120;
-		var colorStr = `hsl(${colorHealth}, 100%, 50%)`;
+		let topLeftCoords = this.topLeftPosition();
+		let leftPx = topLeftCoords.x * Config.gridSquareSize + Config.gridOffset.x;
+		let topPx = topLeftCoords.y * Config.gridSquareSize + Config.gridOffset.y;
+		let sizePx = this.size * Config.gridSquareSize;
+		let colorHealth = (this._currentHealth/this.maxHealth)*120;
+		let colorStr = `hsl(${colorHealth}, 100%, 50%)`;
 		ctx.fillStyle = colorStr;
 		ctx.fillRect(leftPx, topPx, sizePx, sizePx);
 		ctx.fillStyle = "#000000";
 	}
 
-	public topLeftPosition(): GridPosition{
-		return {
-			x: this.position.x - (this.size /2),
-			y: this.position.y - (this.size /2)
-		};
+	private topLeftPosition(): GridPosition{
+		return new GridPosition(
+			this.position.x - (this.size /2),
+			this.position.y - (this.size /2)
+		);
 	}
 } 

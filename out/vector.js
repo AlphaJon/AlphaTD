@@ -1,19 +1,18 @@
-var Vector = /** @class */ (function () {
-    function Vector(x, y) {
+export class Vector {
+    constructor(x, y) {
         this.x = x;
         this.y = y;
     }
-    Vector.prototype.weight = function () {
+    weight() {
         return Math.sqrt(this.x * this.x + this.y * this.y);
-    };
+    }
     ;
-    Vector.prototype.normalize = function () {
+    normalize() {
         var weight = this.weight();
         if (weight == 0) {
             return new Vector(0, 0);
         }
         return new Vector(this.x / weight, this.y / weight);
-    };
-    return Vector;
-}());
+    }
+}
 //# sourceMappingURL=vector.js.map

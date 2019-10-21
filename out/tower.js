@@ -1,4 +1,7 @@
-var defaultTower = {
+/// <reference path="references.ts" />
+import { Config } from "./references.js";
+export { Tower, towerList };
+let defaultTower = {
     cost: 10,
     attackSpeed: 5,
     damage: 1,
@@ -6,8 +9,11 @@ var defaultTower = {
     projectileSpeed: 3,
     effects: []
 };
-var Tower = /** @class */ (function () {
-    function Tower(baseTowerStats) {
+let towerList = {
+    "defaultTower": defaultTower
+};
+class Tower {
+    constructor(baseTowerStats) {
         console.log(this);
         this.level = 1;
         this.cost = baseTowerStats.cost;
@@ -18,39 +24,37 @@ var Tower = /** @class */ (function () {
         this.effects = baseTowerStats.effects;
         this.reloadProgress = 0;
     }
-    Tower.prototype.fireAtEnemy = function (enemy, count) {
-        if (count === void 0) { count = 1; }
-        console.log("Pew pew " + count + " time(s)");
+    fireAtEnemy(enemy, count = 1) {
+        console.log(`Pew pew ${count} time(s)`);
         enemy.currentHealth -= this.baseDamage;
         //let tmpProjectile = new Projectile(enemy);
         //tmpProjectile.count = count;
         //tmpProjectile.position = gridToPos(this.gridPosition);
-    };
+    }
     ;
-    Tower.prototype.onTick = function (deltaTime) {
+    onTick(deltaTime) {
         this.reloadProgress += this.baseAttackSpeed * deltaTime / 1000;
         if (this.reloadProgress < 1) {
             return;
         }
-        var enemies = currentGame.getEnemiesInRange(this.gridPosition, this.baseRange);
+        var enemies = Config.currentGame.getEnemiesInRange(this.gridPosition, this.baseRange);
         if (enemies.length > 0) {
             var count = Math.floor(this.reloadProgress);
             this.fireAtEnemy(enemies[0], count);
             this.reloadProgress -= count;
         }
-    };
-    Tower.prototype.setPosition = function (position) {
+    }
+    setPosition(position) {
         this.gridPosition = position;
-    };
-    Tower.prototype.render = function (ctx) {
-        var pos = gridToPos(this.gridPosition);
+    }
+    render(ctx) {
+        let pos = this.gridPosition.toPixelPos();
         ctx.fillStyle = "#FF0000";
         ctx.fillRect(pos.x, pos.y, Config.gridSquareSize, Config.gridSquareSize);
         ctx.fillStyle = "#000000";
-    };
-    return Tower;
-}());
-var baseProjectileStats = {
+    }
+}
+let baseProjectileStats = {
     stats: {},
     count: 1,
     position: {
@@ -60,7 +64,7 @@ var baseProjectileStats = {
 };
 //baseProjectileStats.stats = baseTowerStats.stats.projectileStats;
 //Constructor function
-var Projectile = function (enemy) {
+let Projectile = function (enemy) {
     this.targetEnemy = enemy;
 };
 Projectile.prototype.onTick = function (first_argument) {

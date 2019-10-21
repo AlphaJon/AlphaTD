@@ -1,11 +1,18 @@
 {
     "compilerOptions": {
+        //"outFile": "./TD.js",
         "outDir": "./out",
-        "allowJs": true,
+        //"allowJs": true,
         "sourceMap": true,
-        "target": "es5"
+        "target": "es2015",
+        //"composite": true
+        "module": "es2015",
+        "noResolve": true
     },
     "include": [
-        "./src/**/*"
-    ]
+        "./src/*"
+    ],
+    /*"exclude": [
+        "./lib/*"
+    ]*/
 }

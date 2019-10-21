@@ -1,3 +1,10 @@
+/// <reference path="references.ts" />
+
+import {
+	Config, GridPosition, PixelPosition, Game,
+	Enemy, Tower, towerList
+} from "./references.js";
+
 Config.canvas.onclick = function(event){
 	// https://stackoverflow.com/questions/55677/
 	const rect = Config.canvas.getBoundingClientRect();
@@ -5,20 +12,26 @@ Config.canvas.onclick = function(event){
 	const y = event.clientY - rect.top;
 	//console.log(event);
 	//console.log(`clicked at ${event.x}, ${event.y}`);
-	testSpawnTower(posToGrid({x: x, y: y}));
+	testSpawnTower(new PixelPosition(x, y).toGridPos());
 }
 
 document.getElementById('level1').onclick = function(event){
 	console.log('Level 1 loaded');
-	currentGame = new Game(0);
+	Config.currentGame = new Game(0);
 }
 
 document.getElementById('wave').onclick = function(event){
-	//var level = currentGame.currentLevel;
-	//console.log(level);
-	var wave = currentGame.getCurrentWave();
-	currentGame.launchNextWave();
-	currentGame.waveNumber--;
+	var wave = Config.currentGame.getCurrentWave();
+	Config.currentGame.launchNextWave();
+	Config.currentGame.waveNumber--;
+}
+
+document.getElementById("start").onclick = function (event) {
+	Config.currentGame.resume();
+}
+
+document.getElementById("pause").onclick = function (event) {
+	Config.currentGame.pause();
 }
 
 //function drawSquare(x,y,size) {
@@ -30,20 +43,20 @@ document.getElementById('wave').onclick = function(event){
 function testSpawnEnemy() {
 	//console.log(config.canvas);
 	//console.log(event);
-	var wave = currentGame.getCurrentWave();
+	var wave = Config.currentGame.getCurrentWave();
 	var en = new Enemy(wave.enemyStats);
 	console.log(wave);
-	currentGame.enemyList.push(en);
+	Config.currentGame.enemyList.push(en);
 	console.log(en.position);
-	console.log(currentGame.enemyList);
+	console.log(Config.currentGame.enemyList);
 }
 
 function testSpawnTower(position:GridPosition) {
-	if (currentGame.money >= defaultTower.cost) {
-		currentGame.money -= defaultTower.cost;
-		let twr = new Tower(defaultTower);
+	if (Config.currentGame.money >= towerList.defaultTower.cost) {
+		Config.currentGame.money -= towerList.defaultTower.cost;
+		let twr = new Tower(towerList.defaultTower);
 		twr.setPosition(position);
-		currentGame.towerList.push(twr);
+		Config.currentGame.towerList.push(twr);
 	}
 	
 }

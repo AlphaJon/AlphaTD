@@ -1,16 +1,16 @@
-var Level = /** @class */ (function () {
-    function Level(data) {
+import { GridPosition, Config, PixelPosition } from "./references.js";
+export { Level };
+class Level {
+    constructor(intLevel) {
+        let data = levelDataArray[intLevel];
         this.startingMoney = data.startingCurrency;
         this.spawnPoint = data.spawnPoint;
         this.pathPoints = data.pathPoints;
         this.waves = data.waves;
         this.generateGrid();
     }
-    Level.prototype.generateGrid = function () {
-        var startPoint = {
-            x: Math.floor(this.spawnPoint.x),
-            y: Math.floor(this.spawnPoint.y)
-        };
+    generateGrid() {
+        var startPoint = new GridPosition(Math.floor(this.spawnPoint.x), Math.floor(this.spawnPoint.y));
         this.grid = [];
         for (var i = 0; i < Config.gridCells.width; i++) {
             this.grid[i] = [];
@@ -50,13 +50,10 @@ var Level = /** @class */ (function () {
                 this.grid[startPoint.x][startPoint.y] = 1;
             }
         }
-    };
-    Level.prototype.render = function (ctx) {
+    }
+    render(ctx) {
         var size = Config.gridSquareSize;
-        var currentPos = {
-            x: Config.gridOffset.x,
-            y: Config.gridOffset.y,
-        };
+        var currentPos = new PixelPosition(Config.gridOffset.x, Config.gridOffset.y);
         //ctx.fillStyle("rgb(0,0,0)");
         for (var i = 0; i < 15; i++) {
             for (var j = 0; j < 12; j++) {
@@ -73,21 +70,17 @@ var Level = /** @class */ (function () {
             currentPos.x += size;
             currentPos.y = Config.gridOffset.y;
         }
-    };
-    return Level;
-}());
-var levelDataArray = [];
+    }
+}
+let levelDataArray = [];
 levelDataArray[0] = {
     startingCurrency: 100,
-    spawnPoint: {
-        x: 0,
-        y: 3.5,
-    },
+    spawnPoint: new GridPosition(0, 3.5),
     pathPoints: [
-        { x: 5.5, y: 3.5 },
-        { x: 5.5, y: 8.5 },
-        { x: 12.5, y: 8.5 },
-        { x: 12.5, y: 12 }
+        GridPosition.fromPoint({ x: 5.5, y: 3.5 }),
+        GridPosition.fromPoint({ x: 5.5, y: 8.5 }),
+        GridPosition.fromPoint({ x: 12.5, y: 8.5 }),
+        GridPosition.fromPoint({ x: 12.5, y: 12 })
     ],
     waves: [
         {
@@ -103,4 +96,4 @@ levelDataArray[0] = {
         }
     ]
 };
-//# sourceMappingURL=levelData.js.map
+//# sourceMappingURL=level.js.map

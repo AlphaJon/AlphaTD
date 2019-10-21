@@ -1,3 +1,6 @@
+import {Renderable, GridPosition, Config, PixelPosition, EnemyData} from "./references.js";
+export {Level, WaveData};
+
 class Level implements Renderable{
 	public spawnPoint: GridPosition;
 	public pathPoints: GridPosition[];
@@ -5,7 +8,8 @@ class Level implements Renderable{
 	public grid: number[][];
 	public startingMoney: number;
 
-	constructor(data:LevelData){
+	constructor(intLevel: number){
+		let data:LevelData = levelDataArray[intLevel];
 		this.startingMoney = data.startingCurrency;
 		this.spawnPoint = data.spawnPoint;
 		this.pathPoints = data.pathPoints;
@@ -14,10 +18,10 @@ class Level implements Renderable{
 	}
 
 	private generateGrid(): void {
-		var startPoint:GridPosition = {
-			x: Math.floor(this.spawnPoint.x),
-			y: Math.floor(this.spawnPoint.y)
-		}
+		var startPoint:GridPosition = new GridPosition(
+			Math.floor(this.spawnPoint.x),
+			Math.floor(this.spawnPoint.y)
+		)
 		this.grid = [];
 		for (var i = 0; i < Config.gridCells.width; i++) {
 			this.grid[i] = [];
@@ -63,10 +67,10 @@ class Level implements Renderable{
 
 	render(ctx: CanvasRenderingContext2D): void {
 		var size = Config.gridSquareSize;
-		var currentPos: PixelPosition = {
-			x: Config.gridOffset.x,
-			y: Config.gridOffset.y,
-		};
+		var currentPos: PixelPosition = new PixelPosition(
+			Config.gridOffset.x,
+			Config.gridOffset.y,
+		);
 		//ctx.fillStyle("rgb(0,0,0)");
 		for (var i = 0; i < 15; i++) {
 			for (var j = 0; j < 12; j++) {
@@ -103,15 +107,12 @@ let levelDataArray:LevelData[] = [];
 
 levelDataArray[0] = {
 	startingCurrency: 100,
-	spawnPoint: {
-		x: 0,
-		y: 3.5,
-	},
+	spawnPoint: new GridPosition(0, 3.5),
 	pathPoints : [
-		{x: 5.5, y: 3.5},
-		{x: 5.5, y: 8.5},
-		{x: 12.5, y: 8.5},
-		{x: 12.5, y: 12}
+		GridPosition.fromPoint({x: 5.5, y: 3.5}),
+		GridPosition.fromPoint({x: 5.5, y: 8.5}),
+		GridPosition.fromPoint({x: 12.5, y: 8.5}),
+		GridPosition.fromPoint({x: 12.5, y: 12})
 	],
 	waves: [
 		{

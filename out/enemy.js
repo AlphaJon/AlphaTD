@@ -1,42 +1,38 @@
-var Enemy = /** @class */ (function () {
-    function Enemy(stats) {
-        var pos = currentGame.getSpawnPoint();
+/// <reference path="references.ts" />
+import { Config, GridPosition, Vector } from "./references.js";
+export { Enemy };
+class Enemy {
+    constructor(stats) {
+        var pos = Config.currentGame.getSpawnPoint();
         //this.stats = clone(game.currentLevel.data.waves[game.currentWave].stats);
         this.maxHealth = stats.maxHealth;
         this.speed = stats.speed;
         this.size = stats.size;
         this.effects = stats.effects;
         this._currentHealth = this.maxHealth;
-        this.position = {
-            x: pos.x,
-            y: pos.y
-        };
+        this.position = GridPosition.fromPoint(pos);
         this.currentPathPoint = 0;
         this.endReached = false;
     }
-    Object.defineProperty(Enemy.prototype, "currentHealth", {
-        get: function () {
-            return this._currentHealth;
-        },
-        set: function (value) {
-            this._currentHealth = value;
-            if (this._currentHealth <= 0) {
-                //TODO: setup destruction?
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Enemy.prototype.isValid = function () {
+    get currentHealth() {
+        return this._currentHealth;
+    }
+    set currentHealth(value) {
+        this._currentHealth = value;
+        if (this._currentHealth <= 0) {
+            //TODO: setup destruction?
+        }
+    }
+    isValid() {
         return !(this.endReached) && this._currentHealth > 0;
-    };
+    }
     ;
-    Enemy.prototype.move = function (factor) {
+    move(factor) {
         if (this.endReached) {
             return;
         }
         var size = Config.gridSquareSize;
-        var points = currentGame.level.pathPoints;
+        var points = Config.currentGame.level.pathPoints;
         var destination = points[this.currentPathPoint];
         var delta = new Vector(destination.x - this.position.x, destination.y - this.position.y);
         var baseVector = delta.normalize();
@@ -52,31 +48,27 @@ var Enemy = /** @class */ (function () {
             }
         }
         //console.log(this.position);
-    };
+    }
     ;
-    Enemy.prototype.onTick = function (deltaTime) {
+    onTick(deltaTime) {
         this.move(deltaTime / 1000);
         //console.log(config.gridSquareSize * deltaTime/1000 * 60);
         //this.position.y += deltaTime/1000;
-    };
+    }
     ;
-    Enemy.prototype.render = function (ctx) {
-        var topLeftCoords = this.topLeftPosition();
-        var leftPx = topLeftCoords.x * Config.gridSquareSize + Config.gridOffset.x;
-        var topPx = topLeftCoords.y * Config.gridSquareSize + Config.gridOffset.y;
-        var sizePx = this.size * Config.gridSquareSize;
-        var colorHealth = (this._currentHealth / this.maxHealth) * 120;
-        var colorStr = "hsl(" + colorHealth + ", 100%, 50%)";
+    render(ctx) {
+        let topLeftCoords = this.topLeftPosition();
+        let leftPx = topLeftCoords.x * Config.gridSquareSize + Config.gridOffset.x;
+        let topPx = topLeftCoords.y * Config.gridSquareSize + Config.gridOffset.y;
+        let sizePx = this.size * Config.gridSquareSize;
+        let colorHealth = (this._currentHealth / this.maxHealth) * 120;
+        let colorStr = `hsl(${colorHealth}, 100%, 50%)`;
         ctx.fillStyle = colorStr;
         ctx.fillRect(leftPx, topPx, sizePx, sizePx);
         ctx.fillStyle = "#000000";
-    };
-    Enemy.prototype.topLeftPosition = function () {
-        return {
-            x: this.position.x - (this.size / 2),
-            y: this.position.y - (this.size / 2)
-        };
-    };
-    return Enemy;
-}());
+    }
+    topLeftPosition() {
+        return new GridPosition(this.position.x - (this.size / 2), this.position.y - (this.size / 2));
+    }
+}
 //# sourceMappingURL=enemy.js.map

@@ -1,41 +1,12 @@
-class Config {
-	static paused = true;
-	static gridSquareSize = 32; //size of one grid square in pixels
-	static gridOffset: PixelPosition = { //shift from up-left corner in pixels
-		x: 0,
-		y: 0
-	};
-	static gridCells = {
-		width: 15,
-		height: 12
-	};
-	static canvas = document.getElementById('render-canvas') as HTMLCanvasElement;
-	static canvasRender = Config.canvas.getContext("2d");
-};
+/// <reference path="references.ts" />
 
-let currentGame:Game = null;
+import {
+	Config, Level, WaveData, GridPosition, 
+	Renderable, Tickable, Tower, Enemy
+} from "./references.js";
+export {Game}
 
-interface GridPosition {
-	x: number;
-	y: number;
-}
 
-interface PixelPosition {
-	x: number;
-	y: number;
-}
-
-interface Cloneable {
-	clone(): any;
-}
-
-interface Tickable {
-	onTick(deltaTime:number): void;
-}
-
-interface Renderable {
-	render(ctx:CanvasRenderingContext2D): void;
-}
 /**
  * Starts a new game based on a given level, builds level from levelData
  */
@@ -57,16 +28,21 @@ class Game implements Renderable, Tickable{
 	}
 
 	constructor(intLevel:number) {
-		this.level = new Level(levelDataArray[intLevel]);
+		this.level = new Level(intLevel);
 		this.money = this.level.startingMoney;
 		this.waveNumber = 0;
 		this.towerList = [];
 		this.enemyList = [];
 		this.pendingEnemyList = [];
+		this.render(Config.canvasRender);
 	}
 
-	public getCurrentWave():WaveData {
+	public getCurrentWave(): WaveData {
 		return this.level.waves[this.waveNumber];
+	}
+
+	public getSpawnPoint(): GridPosition {
+		return this.level.spawnPoint;
 	}
 
 	public getEnemiesInRange(position: GridPosition, range: number): Enemy[]{
@@ -81,6 +57,7 @@ class Game implements Renderable, Tickable{
 		return result;
 	}
 
+	//note: probably more efficient but unstable when there are holes in array
 	//public getEnemiesInRange(position: GridPosition, range: number): Enemy[]{
 	//	console.log(position);
 	//	let enemiesInRange:Enemy[] = [];
@@ -97,13 +74,10 @@ class Game implements Renderable, Tickable{
 	//	return enemiesInRange;
 	//}
 
-	public getSpawnPoint():GridPosition {
+	/*public getSpawnPoint():GridPosition {
 		var rawSpawn = this.level.spawnPoint;
-		return {
-			x: rawSpawn.x,
-			y: rawSpawn.y,
-		};
-	}
+		return rawSpawn;
+	}*/
 
 	public launchNextWave() {
 		var wave = this.getCurrentWave();
@@ -146,8 +120,18 @@ class Game implements Renderable, Tickable{
 		});
 	}
 
+	public pause(){
+		Config.paused = true;
+		window.cancelAnimationFrame(animationFrameId);
+	}
+
 	public render(ctx:CanvasRenderingContext2D){
 		this.level.render(ctx);
+	}
+
+	public resume(){
+		Config.paused = false;
+		animationFrameId = window.requestAnimationFrame(initGameTick);
 	}
 }
 
@@ -167,11 +151,11 @@ function gameTick(timestamp: number) {
 		Config.canvas.width,
 		Config.canvas.height);
 	
-	currentGame.render(Config.canvasRender);
+	Config.currentGame.render(Config.canvasRender);
 	//console.log(timestamp);
 	//console.log(deltaTime);
 	//console.log(game.enemyList);
-	currentGame.onTick(deltaTime);
+	Config.currentGame.onTick(deltaTime);
 
 	document.getElementById("fpscounter").innerHTML = "" + Math.round(fps);
 
@@ -179,35 +163,4 @@ function gameTick(timestamp: number) {
 	if (!(Config.paused)) {
 		animationFrameId = window.requestAnimationFrame(gameTick);
 	}
-}
-
-function gridToPos(gridPosition: GridPosition): PixelPosition {
-	return {
-		x: gridPosition.x * Config.gridSquareSize + Config.gridOffset.x,
-		y: gridPosition.y * Config.gridSquareSize + Config.gridOffset.y
-	};
-}
-
-function posToGrid(position: PixelPosition): GridPosition {
-	return {
-		x: Math.floor((position.x - Config.gridOffset.x)/Config.gridSquareSize),
-		y: Math.floor((position.y - Config.gridOffset.y)/Config.gridSquareSize)
-	}
-}
-
-//Thank you StackOverflow
-//Note: do not use on objects than contain functions, or Date objects
-//Also avoid using in CPU-intensive code unless necessary, performance cost over manually creating objects
-function clone<T>(obj: T): T {
-	return JSON.parse(JSON.stringify(obj));
-}
-
-function play(){
-	Config.paused = false;
-	animationFrameId = window.requestAnimationFrame(initGameTick);
-}
-
-function pause(){
-	Config.paused = true;
-	window.cancelAnimationFrame(animationFrameId);
 }

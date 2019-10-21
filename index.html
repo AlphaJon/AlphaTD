@@ -17,20 +17,25 @@
 		<span>
 			<button id="level1" style="vertical-align: top;">Load level 1</button>
 			<button id="wave" style="vertical-align: top;">Send wave</button>
-			<button id="start" style="vertical-align: top;" onclick="play();">Start</button>
-			<button id="pause" style="vertical-align: top;" onclick="pause();">Pause</button>
+			<button id="start" style="vertical-align: top;">Start</button>
+			<button id="pause" style="vertical-align: top;">Pause</button>
 			<span style="vertical-align: top;">
 				<div><span id="fpscounter">-</span> FPS</div>
 				<div>You have <span id="moneydisplay">0</span>$</div>
 			</span>
 		</span>
 	</div>
-	<script type="text/javascript" src="out/general.js"></script>
-	<script type="text/javascript" src="out/vector.js"></script>
-	<script type="text/javascript" src="out/levelData.js"></script>
-	<script type="text/javascript" src="out/enemy.js"></script>
-	<script type="text/javascript" src="out/tower.js"></script>
-	<script type="text/javascript" src="out/renderers.js"></script>
-	<script type="text/javascript" src="out/test.js"></script>
+	<script type="text/javascript" src="lib/pixi.js"></script>
+	<script type="module" src="out/references.js"></script>
+	<!--script type="module" src="out/common.js"></script>
+	<script type="module" src="out/position.js"></script>
+	<script type="module" src="out/config.js"></script>
+	<script type="module" src="out/game.js"></script>
+	<script type="module" src="out/vector.js"></script>
+	<script type="module" src="out/level.js"></script>
+	<script type="module" src="out/enemy.js"></script>
+	<script type="module" src="out/tower.js"></script-->
+	<script type="module" src="out/test.js"></script>
+	<!--script type="text/javascript" src="TD.js"></script-->
 </body>
 </html>

@@ -1,3 +1,8 @@
+/// <reference path="references.ts" />
+
+import {Config, Renderable, Tickable, GridPosition, Enemy} from "./references.js";
+export {Tower, towerList}
+
 interface TowerData {
 	cost: number;
 	attackSpeed: number;
@@ -14,6 +19,10 @@ let defaultTower:TowerData = {
 	range: 3,
 	projectileSpeed: 3,
 	effects: []
+}
+
+let towerList = {
+	"defaultTower": defaultTower
 }
 
 class Tower implements Renderable, Tickable{
@@ -57,7 +66,7 @@ class Tower implements Renderable, Tickable{
 		if (this.reloadProgress < 1) {
 			return;
 		}
-		var enemies:Enemy[] = currentGame.getEnemiesInRange(this.gridPosition, this.baseRange);
+		var enemies:Enemy[] = Config.currentGame.getEnemiesInRange(this.gridPosition, this.baseRange);
 		if (enemies.length > 0) {
 			var count = Math.floor(this.reloadProgress);
 			this.fireAtEnemy(enemies[0], count);
@@ -70,7 +79,7 @@ class Tower implements Renderable, Tickable{
 	}
 
 	render(ctx:CanvasRenderingContext2D) {
-		let pos = gridToPos(this.gridPosition);
+		let pos = this.gridPosition.toPixelPos();
 		ctx.fillStyle = "#FF0000";
 		ctx.fillRect(pos.x, pos.y, Config.gridSquareSize, Config.gridSquareSize);
 		ctx.fillStyle = "#000000";
