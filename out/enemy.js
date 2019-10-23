@@ -1,8 +1,8 @@
 /// <reference path="references.ts" />
 import { Config, GridPosition, Vector } from "./references.js";
 export { Enemy };
-class Enemy {
-    constructor(stats) {
+var Enemy = /** @class */ (function () {
+    function Enemy(stats) {
         var pos = Config.currentGame.getSpawnPoint();
         //this.stats = clone(game.currentLevel.data.waves[game.currentWave].stats);
         this.maxHealth = stats.maxHealth;
@@ -14,20 +14,24 @@ class Enemy {
         this.currentPathPoint = 0;
         this.endReached = false;
     }
-    get currentHealth() {
-        return this._currentHealth;
-    }
-    set currentHealth(value) {
-        this._currentHealth = value;
-        if (this._currentHealth <= 0) {
-            //TODO: setup destruction?
-        }
-    }
-    isValid() {
+    Object.defineProperty(Enemy.prototype, "currentHealth", {
+        get: function () {
+            return this._currentHealth;
+        },
+        set: function (value) {
+            this._currentHealth = value;
+            if (this._currentHealth <= 0) {
+                //TODO: setup destruction?
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Enemy.prototype.isValid = function () {
         return !(this.endReached) && this._currentHealth > 0;
-    }
+    };
     ;
-    move(factor) {
+    Enemy.prototype.move = function (factor) {
         if (this.endReached) {
             return;
         }
@@ -48,27 +52,28 @@ class Enemy {
             }
         }
         //console.log(this.position);
-    }
+    };
     ;
-    onTick(deltaTime) {
+    Enemy.prototype.onTick = function (deltaTime) {
         this.move(deltaTime / 1000);
         //console.log(config.gridSquareSize * deltaTime/1000 * 60);
         //this.position.y += deltaTime/1000;
-    }
+    };
     ;
-    render(ctx) {
-        let topLeftCoords = this.topLeftPosition();
-        let leftPx = topLeftCoords.x * Config.gridSquareSize + Config.gridOffset.x;
-        let topPx = topLeftCoords.y * Config.gridSquareSize + Config.gridOffset.y;
-        let sizePx = this.size * Config.gridSquareSize;
-        let colorHealth = (this._currentHealth / this.maxHealth) * 120;
-        let colorStr = `hsl(${colorHealth}, 100%, 50%)`;
+    Enemy.prototype.render = function (ctx) {
+        var topLeftCoords = this.topLeftPosition();
+        var leftPx = topLeftCoords.x * Config.gridSquareSize + Config.gridOffset.x;
+        var topPx = topLeftCoords.y * Config.gridSquareSize + Config.gridOffset.y;
+        var sizePx = this.size * Config.gridSquareSize;
+        var colorHealth = (this._currentHealth / this.maxHealth) * 120;
+        var colorStr = "hsl(" + colorHealth + ", 100%, 50%)";
         ctx.fillStyle = colorStr;
         ctx.fillRect(leftPx, topPx, sizePx, sizePx);
         ctx.fillStyle = "#000000";
-    }
-    topLeftPosition() {
+    };
+    Enemy.prototype.topLeftPosition = function () {
         return new GridPosition(this.position.x - (this.size / 2), this.position.y - (this.size / 2));
-    }
-}
+    };
+    return Enemy;
+}());
 //# sourceMappingURL=enemy.js.map

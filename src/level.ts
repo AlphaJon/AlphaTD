@@ -1,4 +1,7 @@
+/// <reference types="pixi.js.d.ts" />
+
 import {Renderable, GridPosition, Config, PixelPosition, EnemyData} from "./references.js";
+//import * as PIXI from "./pixi.js";
 export {Level, WaveData};
 
 class Level implements Renderable{
@@ -65,7 +68,12 @@ class Level implements Renderable{
 		}
 	}
 
-	render(ctx: CanvasRenderingContext2D): void {
+	render(): void {
+		var app = Config.app;
+		let container = new PIXI.Container();
+		app.stage.addChild(container);
+		let texture = PIXI.Texture.fromImage("img/grid.png");
+
 		var size = Config.gridSquareSize;
 		var currentPos: PixelPosition = new PixelPosition(
 			Config.gridOffset.x,
@@ -75,7 +83,12 @@ class Level implements Renderable{
 		for (var i = 0; i < 15; i++) {
 			for (var j = 0; j < 12; j++) {
 				if (this.grid[i][j] == 0) {
-					ctx.strokeRect(currentPos.x, currentPos.y, size, size);
+					var cell = new PIXI.Sprite(texture);
+					cell.width = size;
+					cell.height = size;
+					cell.x = currentPos.x;
+					cell.y = currentPos.y;
+					container.addChild(cell);
 				} else {
 					//ctx.strokeRect(currentPos.x, currentPos.y, size/2, size/2);
 					//ctx.strokeRect(currentPos.x + size/2, currentPos.y + size/2, size/2, size/2);

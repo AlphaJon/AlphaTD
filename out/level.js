@@ -1,15 +1,17 @@
+/// <reference types="pixi.js.d.ts" />
 import { GridPosition, Config, PixelPosition } from "./references.js";
+//import * as PIXI from "./pixi.js";
 export { Level };
-class Level {
-    constructor(intLevel) {
-        let data = levelDataArray[intLevel];
+var Level = /** @class */ (function () {
+    function Level(intLevel) {
+        var data = levelDataArray[intLevel];
         this.startingMoney = data.startingCurrency;
         this.spawnPoint = data.spawnPoint;
         this.pathPoints = data.pathPoints;
         this.waves = data.waves;
         this.generateGrid();
     }
-    generateGrid() {
+    Level.prototype.generateGrid = function () {
         var startPoint = new GridPosition(Math.floor(this.spawnPoint.x), Math.floor(this.spawnPoint.y));
         this.grid = [];
         for (var i = 0; i < Config.gridCells.width; i++) {
@@ -50,15 +52,24 @@ class Level {
                 this.grid[startPoint.x][startPoint.y] = 1;
             }
         }
-    }
-    render(ctx) {
+    };
+    Level.prototype.render = function () {
+        var app = Config.app;
+        var container = new PIXI.Container();
+        app.stage.addChild(container);
+        var texture = PIXI.Texture.fromImage("img/grid.png");
         var size = Config.gridSquareSize;
         var currentPos = new PixelPosition(Config.gridOffset.x, Config.gridOffset.y);
         //ctx.fillStyle("rgb(0,0,0)");
         for (var i = 0; i < 15; i++) {
             for (var j = 0; j < 12; j++) {
                 if (this.grid[i][j] == 0) {
-                    ctx.strokeRect(currentPos.x, currentPos.y, size, size);
+                    var cell = new PIXI.Sprite(texture);
+                    cell.width = size;
+                    cell.height = size;
+                    cell.x = currentPos.x;
+                    cell.y = currentPos.y;
+                    container.addChild(cell);
                 }
                 else {
                     //ctx.strokeRect(currentPos.x, currentPos.y, size/2, size/2);
@@ -70,9 +81,10 @@ class Level {
             currentPos.x += size;
             currentPos.y = Config.gridOffset.y;
         }
-    }
-}
-let levelDataArray = [];
+    };
+    return Level;
+}());
+var levelDataArray = [];
 levelDataArray[0] = {
     startingCurrency: 100,
     spawnPoint: new GridPosition(0, 3.5),

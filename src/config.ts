@@ -14,4 +14,18 @@ class Config {
 	};
 	static canvas = document.getElementById('render-canvas') as HTMLCanvasElement;
 	static canvasRender = Config.canvas.getContext("2d");
+	static app = new PIXI.Application({
+		view: Config.canvas,
+		width: Config.canvas.width,
+		height: Config.canvas.height,
+		forceCanvas: true
+	});
 };
+
+Config.app.loader
+	.add("grid", "img/grid.png")
+	.add("tower", "img/tower.png")
+	.onComplete.add(function() {
+		Config.currentGame = new Game(0);
+		//Config.currentGame.render();
+	});

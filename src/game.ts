@@ -1,9 +1,9 @@
 /// <reference path="references.ts" />
-
 import {
 	Config, Level, WaveData, GridPosition, 
 	Renderable, Tickable, Tower, Enemy
 } from "./references.js";
+
 export {Game}
 
 
@@ -34,7 +34,7 @@ class Game implements Renderable, Tickable{
 		this.towerList = [];
 		this.enemyList = [];
 		this.pendingEnemyList = [];
-		this.render(Config.canvasRender);
+		this.render();
 	}
 
 	public getCurrentWave(): WaveData {
@@ -125,8 +125,8 @@ class Game implements Renderable, Tickable{
 		window.cancelAnimationFrame(animationFrameId);
 	}
 
-	public render(ctx:CanvasRenderingContext2D){
-		this.level.render(ctx);
+	public render(){
+		this.level.render();
 	}
 
 	public resume(){
@@ -151,7 +151,7 @@ function gameTick(timestamp: number) {
 		Config.canvas.width,
 		Config.canvas.height);
 	
-	Config.currentGame.render(Config.canvasRender);
+	Config.currentGame.render();
 	//console.log(timestamp);
 	//console.log(deltaTime);
 	//console.log(game.enemyList);

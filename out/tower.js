@@ -1,7 +1,7 @@
 /// <reference path="references.ts" />
 import { Config } from "./references.js";
 export { Tower, towerList };
-let defaultTower = {
+var defaultTower = {
     cost: 10,
     attackSpeed: 5,
     damage: 1,
@@ -9,11 +9,11 @@ let defaultTower = {
     projectileSpeed: 3,
     effects: []
 };
-let towerList = {
+var towerList = {
     "defaultTower": defaultTower
 };
-class Tower {
-    constructor(baseTowerStats) {
+var Tower = /** @class */ (function () {
+    function Tower(baseTowerStats) {
         console.log(this);
         this.level = 1;
         this.cost = baseTowerStats.cost;
@@ -24,15 +24,16 @@ class Tower {
         this.effects = baseTowerStats.effects;
         this.reloadProgress = 0;
     }
-    fireAtEnemy(enemy, count = 1) {
-        console.log(`Pew pew ${count} time(s)`);
+    Tower.prototype.fireAtEnemy = function (enemy, count) {
+        if (count === void 0) { count = 1; }
+        console.log("Pew pew " + count + " time(s)");
         enemy.currentHealth -= this.baseDamage;
         //let tmpProjectile = new Projectile(enemy);
         //tmpProjectile.count = count;
         //tmpProjectile.position = gridToPos(this.gridPosition);
-    }
+    };
     ;
-    onTick(deltaTime) {
+    Tower.prototype.onTick = function (deltaTime) {
         this.reloadProgress += this.baseAttackSpeed * deltaTime / 1000;
         if (this.reloadProgress < 1) {
             return;
@@ -43,18 +44,19 @@ class Tower {
             this.fireAtEnemy(enemies[0], count);
             this.reloadProgress -= count;
         }
-    }
-    setPosition(position) {
+    };
+    Tower.prototype.setPosition = function (position) {
         this.gridPosition = position;
-    }
-    render(ctx) {
-        let pos = this.gridPosition.toPixelPos();
+    };
+    Tower.prototype.render = function (ctx) {
+        var pos = this.gridPosition.toPixelPos();
         ctx.fillStyle = "#FF0000";
         ctx.fillRect(pos.x, pos.y, Config.gridSquareSize, Config.gridSquareSize);
         ctx.fillStyle = "#000000";
-    }
-}
-let baseProjectileStats = {
+    };
+    return Tower;
+}());
+var baseProjectileStats = {
     stats: {},
     count: 1,
     position: {
@@ -64,7 +66,7 @@ let baseProjectileStats = {
 };
 //baseProjectileStats.stats = baseTowerStats.stats.projectileStats;
 //Constructor function
-let Projectile = function (enemy) {
+var Projectile = function (enemy) {
     this.targetEnemy = enemy;
 };
 Projectile.prototype.onTick = function (first_argument) {

@@ -2,9 +2,9 @@
 import { Config, PixelPosition, Game, Enemy, Tower, towerList } from "./references.js";
 Config.canvas.onclick = function (event) {
     // https://stackoverflow.com/questions/55677/
-    const rect = Config.canvas.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
+    var rect = Config.canvas.getBoundingClientRect();
+    var x = event.clientX - rect.left;
+    var y = event.clientY - rect.top;
     //console.log(event);
     //console.log(`clicked at ${event.x}, ${event.y}`);
     testSpawnTower(new PixelPosition(x, y).toGridPos());
@@ -42,7 +42,7 @@ function testSpawnEnemy() {
 function testSpawnTower(position) {
     if (Config.currentGame.money >= towerList.defaultTower.cost) {
         Config.currentGame.money -= towerList.defaultTower.cost;
-        let twr = new Tower(towerList.defaultTower);
+        var twr = new Tower(towerList.defaultTower);
         twr.setPosition(position);
         Config.currentGame.towerList.push(twr);
     }

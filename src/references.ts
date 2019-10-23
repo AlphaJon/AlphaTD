@@ -1,3 +1,4 @@
+/// <reference types="pixi.js.d.ts" />
 /// <reference path="common.ts" />
 /// <reference path="position.ts" />
 /// <reference path="config.ts" />
