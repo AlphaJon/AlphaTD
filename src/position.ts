@@ -1,4 +1,4 @@
-import {Config} from "./references.js";
+import { Config, Cloneable } from "./references.js";
 export {GridPosition, PixelPosition};
 
 interface Point2D {
@@ -6,7 +6,7 @@ interface Point2D {
     y: number;
 }
 
-abstract class BasePoint implements Point2D {
+abstract class BasePoint implements Point2D, Cloneable {
     x: number;
     y: number;
 
@@ -15,8 +15,10 @@ abstract class BasePoint implements Point2D {
         this.y = y;
     }
 
+    abstract clone(): BasePoint;
+
     static fromPoint(point: Point2D): BasePoint {
-        throw new Error(`fromPoint not implemented from class ${this}`);
+        throw new Error(`fromPoint not implemented [${this}]`);
     }
 }
 
@@ -26,6 +28,10 @@ class GridPosition extends BasePoint{
 
     static fromPoint(point: Point2D): GridPosition {
         return new GridPosition(point.x, point.y);
+    }
+
+    clone(): GridPosition {
+        return new GridPosition(this.x, this.y);
     }
 
     toPixelPos(): PixelPosition {
@@ -42,6 +48,10 @@ class PixelPosition extends BasePoint {
 
     static fromPoint(point: Point2D): PixelPosition {
         return new PixelPosition(point.x, point.y);
+    }
+
+    clone(): PixelPosition {
+        return new PixelPosition(this.x, this.y);
     }
 
     toGridPos(): GridPosition {

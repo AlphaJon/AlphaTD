@@ -81,6 +81,7 @@ var Game = /** @class */ (function () {
             pendingEn.delay -= deltaTime;
             if (pendingEn.delay <= 0) {
                 this.enemyList.push(pendingEn.enemy);
+                pendingEn.enemy.render();
                 //Remove element from array
                 return false;
             }
@@ -90,13 +91,13 @@ var Game = /** @class */ (function () {
         this.enemyList = this.enemyList.filter(function (en) {
             //console.log(en);
             en.onTick(deltaTime);
-            en.render(Config.canvasRender);
+            //en.render();
             return en.isValid();
             //return true;
         }, this);
         this.towerList.map(function (twr) {
             twr.onTick(deltaTime);
-            twr.render(Config.canvasRender);
+            //twr.render();
         });
     };
     Game.prototype.pause = function () {
@@ -119,11 +120,15 @@ function initGameTick(timestamp) {
     requestAnimationFrame(gameTick);
 }
 function gameTick(timestamp) {
-    var render = Config.canvasRender;
     var deltaTime = timestamp - lastframe;
     var fps = 1000 / deltaTime;
-    render.clearRect(0, 0, Config.canvas.width, Config.canvas.height);
-    Config.currentGame.render();
+    /*var render = Config.canvasRender;
+    
+    
+    render.clearRect(0,0,
+        Config.canvas.width,
+        Config.canvas.height);*/
+    //Config.currentGame.render();
     //console.log(timestamp);
     //console.log(deltaTime);
     //console.log(game.enemyList);

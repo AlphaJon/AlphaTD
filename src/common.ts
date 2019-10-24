@@ -11,7 +11,7 @@ interface Tickable {
 }
 
 interface Renderable {
-	render(ctx:CanvasRenderingContext2D): void;
+	render(): void;
 }
 
 //Thank you StackOverflow

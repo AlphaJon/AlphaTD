@@ -19,7 +19,7 @@ var BasePoint = /** @class */ (function () {
         this.y = y;
     }
     BasePoint.fromPoint = function (point) {
-        throw new Error("fromPoint not implemented from class " + this);
+        throw new Error("fromPoint not implemented [" + this + "]");
     };
     return BasePoint;
 }());
@@ -30,6 +30,9 @@ var GridPosition = /** @class */ (function (_super) {
     }
     GridPosition.fromPoint = function (point) {
         return new GridPosition(point.x, point.y);
+    };
+    GridPosition.prototype.clone = function () {
+        return new GridPosition(this.x, this.y);
     };
     GridPosition.prototype.toPixelPos = function () {
         return new PixelPosition(this.x * Config.gridSquareSize + Config.gridOffset.x, this.y * Config.gridSquareSize + Config.gridOffset.y);
@@ -43,6 +46,9 @@ var PixelPosition = /** @class */ (function (_super) {
     }
     PixelPosition.fromPoint = function (point) {
         return new PixelPosition(point.x, point.y);
+    };
+    PixelPosition.prototype.clone = function () {
+        return new PixelPosition(this.x, this.y);
     };
     PixelPosition.prototype.toGridPos = function () {
         return new GridPosition(Math.floor((this.x - Config.gridOffset.x) / Config.gridSquareSize), Math.floor((this.y - Config.gridOffset.y) / Config.gridSquareSize));

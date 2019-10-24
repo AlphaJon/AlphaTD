@@ -1,5 +1,5 @@
 /// <reference path="references.ts" />
-import { Game, PixelPosition } from "./references.js";
+import { PixelPosition } from "./references.js";
 export { Config };
 var Config = /** @class */ (function () {
     function Config() {
@@ -13,21 +13,16 @@ var Config = /** @class */ (function () {
         height: 12
     };
     Config.canvas = document.getElementById('render-canvas');
-    Config.canvasRender = Config.canvas.getContext("2d");
+    //static canvasRender = Config.canvas.getContext("2d");
     Config.app = new PIXI.Application({
         view: Config.canvas,
         width: Config.canvas.width,
         height: Config.canvas.height,
-        forceCanvas: true
     });
     return Config;
 }());
 ;
 Config.app.loader
     .add("grid", "img/grid.png")
-    .add("tower", "img/tower.png")
-    .onComplete.add(function () {
-    Config.currentGame = new Game(0);
-    //Config.currentGame.render();
-});
+    .add("tower", "img/tower.png");
 //# sourceMappingURL=config.js.map

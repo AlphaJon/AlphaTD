@@ -45,6 +45,7 @@ function testSpawnTower(position) {
         var twr = new Tower(towerList.defaultTower);
         twr.setPosition(position);
         Config.currentGame.towerList.push(twr);
+        twr.render();
     }
 }
 //# sourceMappingURL=test.js.map

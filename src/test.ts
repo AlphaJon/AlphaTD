@@ -57,6 +57,7 @@ function testSpawnTower(position:GridPosition) {
 		let twr = new Tower(towerList.defaultTower);
 		twr.setPosition(position);
 		Config.currentGame.towerList.push(twr);
+		twr.render();
 	}
 	
 }

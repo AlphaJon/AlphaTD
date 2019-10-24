@@ -1,6 +1,7 @@
 /// <reference path="references.ts" />
 
 import {Config, Renderable, Tickable, GridPosition, Enemy} from "./references.js";
+import { Projectile } from "./projectile.js";
 export {Tower, towerList}
 
 interface TowerData {
@@ -17,7 +18,7 @@ let defaultTower:TowerData = {
 	attackSpeed: 5,
 	damage: 1,
 	range: 3,
-	projectileSpeed: 3,
+	projectileSpeed: 10,
 	effects: []
 }
 
@@ -39,6 +40,7 @@ class Tower implements Renderable, Tickable{
 
 	private reloadProgress: number;
 	public gridPosition: GridPosition;
+	private thrownProjectiles: Projectile[];
 
 	constructor(baseTowerStats:TowerData) {
 		console.log(this);
@@ -51,66 +53,53 @@ class Tower implements Renderable, Tickable{
 		this.projectileSpeed = baseTowerStats.projectileSpeed;
 		this.effects = baseTowerStats.effects;
 		this.reloadProgress = 0;
+		this.thrownProjectiles = [];
 	}
 
 	public fireAtEnemy(enemy: Enemy, count = 1) {
 		console.log(`Pew pew ${count} time(s)`);
-		enemy.currentHealth -= this.baseDamage;
-		//let tmpProjectile = new Projectile(enemy);
-		//tmpProjectile.count = count;
-		//tmpProjectile.position = gridToPos(this.gridPosition);
+		
+		let tmpProjectile = new Projectile(this, enemy);
+		tmpProjectile.weight = count;
+		this.thrownProjectiles.push(tmpProjectile);
+		tmpProjectile.render();
 	};
 	
 	onTick(deltaTime: number): void {
+		//console.log(this.thrownProjectiles);
+		this.thrownProjectiles = this.thrownProjectiles.filter(function(projectile: Projectile) {
+			projectile.onTick(deltaTime);
+			return !projectile.endReached;
+		}, this);
+
 		this.reloadProgress += this.baseAttackSpeed * deltaTime/1000;
 		if (this.reloadProgress < 1) {
 			return;
 		}
 		var enemies:Enemy[] = Config.currentGame.getEnemiesInRange(this.gridPosition, this.baseRange);
 		if (enemies.length > 0) {
+			//if enemy in range
 			var count = Math.floor(this.reloadProgress);
 			this.fireAtEnemy(enemies[0], count);
 			this.reloadProgress -= count;
+		} else {
+			//Can store up to 1 charge when no enemies
+			this.reloadProgress = Math.max(this.reloadProgress, 1);
 		}
+		
 	}
 
 	setPosition(position: GridPosition) {
 		this.gridPosition = position;
 	}
 
-	render(ctx:CanvasRenderingContext2D) {
+	render() {
 		let pos = this.gridPosition.toPixelPos();
-		ctx.fillStyle = "#FF0000";
-		ctx.fillRect(pos.x, pos.y, Config.gridSquareSize, Config.gridSquareSize);
-		ctx.fillStyle = "#000000";
+		let cell = new PIXI.Sprite(PIXI.Texture.fromImage("img/tower.png"));
+		cell.width = Config.gridSquareSize;
+		cell.height = Config.gridSquareSize;
+		cell.x = pos.x;
+		cell.y = pos.y;
+		Config.app.stage.addChild(cell);
 	}
 }
-
-let baseProjectileStats = {
-	stats: {},
-	count: 1,
-	position: {
-		x: 0,
-		y: 0
-	}
-};
-//baseProjectileStats.stats = baseTowerStats.stats.projectileStats;
-
-//Constructor function
-let Projectile = function(enemy){
-	this.targetEnemy = enemy;
-}
-
-Projectile.prototype.onTick = function(first_argument) {
-	// body...
-};
-
-Projectile.prototype.hit = function(first_argument) {
-	// body...
-};
-
-/*special = {};
-
-special.prototype.apply = function(enemy) {
-	// body...
-};*/

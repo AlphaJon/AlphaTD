@@ -1,7 +1,7 @@
 /// <reference path="references.ts" />
 
 import {
-	Config, Renderable, Tickable, GridPosition, Vector
+	Config, Renderable, Tickable, GridPosition, Vector, Tower
 } from "./references.js";
 export {Enemy, EnemyData}
 
@@ -24,6 +24,7 @@ class Enemy implements Renderable, Tickable{
 
 	private currentPathPoint: number;
 	private endReached: boolean;
+	private _representation: PIXI.Graphics;
 
 	get currentHealth() {
 		return this._currentHealth;
@@ -33,6 +34,9 @@ class Enemy implements Renderable, Tickable{
 		this._currentHealth = value;
 		if (this._currentHealth <= 0){
 			//TODO: setup destruction?
+			this._representation.destroy();
+		} else {
+			this.render();
 		}
 	}
 
@@ -49,6 +53,13 @@ class Enemy implements Renderable, Tickable{
 		this.position = GridPosition.fromPoint(pos);
 		this.currentPathPoint = 0;
 		this.endReached = false;
+
+		this._representation = new PIXI.Graphics();
+		Config.app.stage.addChild(this._representation);
+	}
+
+	public hit(origin: Tower) {
+		this.currentHealth -= origin.baseDamage;
 	}
 
 	public isValid() {
@@ -73,8 +84,8 @@ class Enemy implements Renderable, Tickable{
 		if (delta.weight() <= 0.01) {
 			//console.log("x:"+this.position.x+", y: "+this.position.y);
 			this.currentPathPoint++;
-			console.log(this.currentPathPoint);
-			console.log(points);
+			//console.log(this.currentPathPoint);
+			//console.log(points);
 			if (this.currentPathPoint == points.length) {
 				this.endReached = true;
 			}
@@ -84,21 +95,32 @@ class Enemy implements Renderable, Tickable{
 
 	public onTick(deltaTime){
 		this.move(deltaTime/1000);
+		if (this.isValid()){
+			let pos = this.position.toPixelPos();
+			this._representation.position.x = pos.x;
+			this._representation.position.y = pos.y;
+			//this._representation.moveTo(pos.x, pos.y);
+		}
+		
 		//console.log(config.gridSquareSize * deltaTime/1000 * 60);
 		
 		//this.position.y += deltaTime/1000;
 	};
 	
-	public render(ctx: CanvasRenderingContext2D){
-		let topLeftCoords = this.topLeftPosition();
-		let leftPx = topLeftCoords.x * Config.gridSquareSize + Config.gridOffset.x;
-		let topPx = topLeftCoords.y * Config.gridSquareSize + Config.gridOffset.y;
+	public render(){
+		//let topLeftCoords = this.topLeftPosition();
+		//let leftPx = topLeftCoords.x * Config.gridSquareSize + Config.gridOffset.x;
+		//let topPx = topLeftCoords.y * Config.gridSquareSize + Config.gridOffset.y;
 		let sizePx = this.size * Config.gridSquareSize;
-		let colorHealth = (this._currentHealth/this.maxHealth)*120;
-		let colorStr = `hsl(${colorHealth}, 100%, 50%)`;
-		ctx.fillStyle = colorStr;
-		ctx.fillRect(leftPx, topPx, sizePx, sizePx);
-		ctx.fillStyle = "#000000";
+		let colorHealth = Math.floor((this._currentHealth/this.maxHealth)*255);
+		this._representation
+			.lineStyle(1, 0x000000)
+			.beginFill(colorHealth*256)
+			.drawCircle(0, 0, sizePx)
+			.endFill();
+		//ctx.fillStyle = colorStr;
+		//ctx.fillRect(leftPx, topPx, sizePx, sizePx);
+		//ctx.fillStyle = "#000000";
 	}
 
 	private topLeftPosition(): GridPosition{

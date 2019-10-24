@@ -16,4 +16,5 @@ export * from "./vector.js";
 export * from "./level.js";
 export * from "./enemy.js";
 export * from "./tower.js";
+export * from "./projectile.js";
 //# sourceMappingURL=references.js.map
