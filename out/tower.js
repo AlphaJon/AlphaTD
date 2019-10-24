@@ -36,7 +36,7 @@ var Tower = /** @class */ (function () {
     };
     ;
     Tower.prototype.onTick = function (deltaTime) {
-        console.log(this.thrownProjectiles);
+        //console.log(this.thrownProjectiles);
         this.thrownProjectiles = this.thrownProjectiles.filter(function (projectile) {
             projectile.onTick(deltaTime);
             return !projectile.endReached;
@@ -59,6 +59,11 @@ var Tower = /** @class */ (function () {
     };
     Tower.prototype.setPosition = function (position) {
         this.gridPosition = position;
+    };
+    Tower.prototype.removeProjectile = function (projectile) {
+        this.thrownProjectiles = this.thrownProjectiles.filter(function (element) {
+            return element !== projectile;
+        });
     };
     Tower.prototype.render = function () {
         var pos = this.gridPosition.toPixelPos();

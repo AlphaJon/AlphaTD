@@ -55,6 +55,7 @@ var Projectile = /** @class */ (function () {
             this._endReached = true;
             this._representation.destroy();
             this.target.hit(this.owner);
+            this.owner.removeProjectile(this);
         }
         //console.log(this.position);
     };

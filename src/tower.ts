@@ -93,6 +93,12 @@ class Tower implements Renderable, Tickable{
 		this.gridPosition = position;
 	}
 
+	removeProjectile(projectile: Projectile) {
+		this.thrownProjectiles = this.thrownProjectiles.filter(function(element){
+			return element !== projectile;
+		});
+	}
+
 	render() {
 		let pos = this.gridPosition.toPixelPos();
 		let cell = new PIXI.Sprite(PIXI.Texture.fromImage("img/tower.png"));

@@ -31,13 +31,14 @@ class Enemy implements Renderable, Tickable{
 	}
 
 	set currentHealth(value: number) {
-		this._currentHealth = value;
-		if (this._currentHealth <= 0){
+		if (this._currentHealth <= 0) return; 
+		if (value <= 0){
 			//TODO: setup destruction?
 			this._representation.destroy();
 		} else {
 			this.render();
 		}
+		this._currentHealth = value;
 	}
 
 	constructor(stats: EnemyData) {

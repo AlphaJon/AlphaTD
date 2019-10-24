@@ -75,6 +75,7 @@ class Projectile implements Renderable, Tickable {
             this._endReached = true;
             this._representation.destroy();
             this.target.hit(this.owner);
+            this.owner.removeProjectile(this);
 		}
 		//console.log(this.position);
     };

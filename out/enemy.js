@@ -21,14 +21,16 @@ var Enemy = /** @class */ (function () {
             return this._currentHealth;
         },
         set: function (value) {
-            this._currentHealth = value;
-            if (this._currentHealth <= 0) {
+            if (this._currentHealth <= 0)
+                return;
+            if (value <= 0) {
                 //TODO: setup destruction?
                 this._representation.destroy();
             }
             else {
                 this.render();
             }
+            this._currentHealth = value;
         },
         enumerable: true,
         configurable: true
