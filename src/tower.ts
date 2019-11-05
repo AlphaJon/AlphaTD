@@ -84,7 +84,7 @@ class Tower implements Renderable, Tickable{
 			this.reloadProgress -= count;
 		} else {
 			//Can store up to 1 charge when no enemies
-			this.reloadProgress = Math.max(this.reloadProgress, 1);
+			this.reloadProgress = Math.min(this.reloadProgress, 1);
 		}
 		
 	}
