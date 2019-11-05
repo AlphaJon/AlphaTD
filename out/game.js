@@ -35,6 +35,8 @@ var Game = /** @class */ (function () {
     Game.prototype.getEnemiesInRange = function (position, range) {
         var rangeSquared = range * range;
         var result = this.enemyList.filter(function (en) {
+            if (en.destroyed)
+                return false;
             //Inside this function, this = position
             var enGridPos = en.position;
             var xdiff = Math.abs(this.x - enGridPos.x);
@@ -92,7 +94,7 @@ var Game = /** @class */ (function () {
             //console.log(en);
             en.onTick(deltaTime);
             //en.render();
-            return en.isValid();
+            return !en.destroyed && en.isValid();
             //return true;
         }, this);
         this.towerList.map(function (twr) {

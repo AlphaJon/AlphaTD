@@ -10,6 +10,7 @@ var Enemy = /** @class */ (function () {
         this.size = stats.size;
         this.effects = stats.effects;
         this._currentHealth = this.maxHealth;
+        this._destroyed = false;
         this.position = GridPosition.fromPoint(pos);
         this.currentPathPoint = 0;
         this.endReached = false;
@@ -24,8 +25,7 @@ var Enemy = /** @class */ (function () {
             if (this._currentHealth <= 0)
                 return;
             if (value <= 0) {
-                //TODO: setup destruction?
-                this._representation.destroy();
+                this.destroy();
             }
             else {
                 this.render();
@@ -35,6 +35,21 @@ var Enemy = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(Enemy.prototype, "destroyed", {
+        get: function () {
+            return this._destroyed;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Enemy.prototype.destroy = function () {
+        if (this._destroyed)
+            return;
+        this._destroyed = true;
+        this._representation.destroy();
+        this.position = null;
+        this.effects = null;
+    };
     Enemy.prototype.hit = function (origin) {
         this.currentHealth -= origin.baseDamage;
     };
@@ -66,6 +81,8 @@ var Enemy = /** @class */ (function () {
     };
     ;
     Enemy.prototype.onTick = function (deltaTime) {
+        if (this._destroyed)
+            return;
         this.move(deltaTime / 1000);
         if (this.isValid()) {
             var pos = this.position.toPixelPos();

@@ -23,6 +23,7 @@ class Enemy implements Renderable, Tickable{
 	public effects: any[]; //TODO
 
 	private currentPathPoint: number;
+	private _destroyed: boolean;
 	private endReached: boolean;
 	private _representation: PIXI.Graphics;
 
@@ -33,12 +34,15 @@ class Enemy implements Renderable, Tickable{
 	set currentHealth(value: number) {
 		if (this._currentHealth <= 0) return; 
 		if (value <= 0){
-			//TODO: setup destruction?
-			this._representation.destroy();
+			this.destroy();
 		} else {
 			this.render();
 		}
 		this._currentHealth = value;
+	}
+
+	get destroyed() {
+		return this._destroyed;
 	}
 
 	constructor(stats: EnemyData) {
@@ -51,12 +55,22 @@ class Enemy implements Renderable, Tickable{
 		this.effects = stats.effects;
 
 		this._currentHealth = this.maxHealth;
+		this._destroyed = false;
 		this.position = GridPosition.fromPoint(pos);
 		this.currentPathPoint = 0;
 		this.endReached = false;
 
 		this._representation = new PIXI.Graphics();
 		Config.app.stage.addChild(this._representation);
+	}
+
+	public destroy() {
+		if (this._destroyed) return;
+
+		this._destroyed = true;
+		this._representation.destroy();
+		this.position = null;
+		this.effects = null;
 	}
 
 	public hit(origin: Tower) {
@@ -95,6 +109,7 @@ class Enemy implements Renderable, Tickable{
 	};
 
 	public onTick(deltaTime){
+		if (this._destroyed) return;
 		this.move(deltaTime/1000);
 		if (this.isValid()){
 			let pos = this.position.toPixelPos();

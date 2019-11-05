@@ -16,6 +16,7 @@ var Projectile = /** @class */ (function () {
         this.position = new GridPosition(owner.gridPosition.x + 0.5, owner.gridPosition.y + 0.5);
         this.speed = owner.projectileSpeed;
         this.size = Projectile.defaultSize;
+        this._destroyed = false;
         this._endReached = false;
         this._representation = new PIXI.Graphics();
         Config.app.stage.addChild(this._representation);
@@ -38,6 +39,16 @@ var Projectile = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    Projectile.prototype.destroy = function () {
+        if (this._destroyed)
+            return;
+        this._destroyed = true;
+        this.owner.removeProjectile(this);
+        this._representation.destroy();
+        this.owner = null;
+        this.target = null;
+        this.position = null;
+    };
     Projectile.prototype.move = function (factor) {
         if (this._endReached) {
             return;
@@ -53,14 +64,20 @@ var Projectile = /** @class */ (function () {
         //if the projectile overlaps the enemy at 90%
         if (delta.weight() <= this.size / 10) {
             this._endReached = true;
-            this._representation.destroy();
             this.target.hit(this.owner);
-            this.owner.removeProjectile(this);
+            this.destroy();
         }
         //console.log(this.position);
     };
     ;
     Projectile.prototype.onTick = function (deltaTime) {
+        if (this._destroyed) {
+            return;
+        }
+        if (this.target.destroyed) {
+            this.destroy();
+            return;
+        }
         this.move(deltaTime / 1000);
         if (!this._endReached) {
             var pos = this.position.toPixelPos();

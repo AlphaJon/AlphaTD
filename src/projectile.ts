@@ -24,6 +24,7 @@ class Projectile implements Renderable, Tickable {
     public speed: number;
     public size: number;
 
+    private _destroyed: boolean;
     private _endReached: boolean;
     private _representation: PIXI.Graphics;
     private _weight: number;
@@ -41,7 +42,7 @@ class Projectile implements Renderable, Tickable {
         this.size = Projectile.defaultSize + Math.min(value - 1, 5);
     }
 
-    constructor(owner: Tower, target: Enemy){
+    constructor(owner: Tower, target: Enemy) {
         this.owner = owner;
         this.target = target;
         this.position = new GridPosition(
@@ -50,12 +51,25 @@ class Projectile implements Renderable, Tickable {
             );
         this.speed = owner.projectileSpeed;
         this.size = Projectile.defaultSize;
+        this._destroyed = false;
         this._endReached = false;
         this._representation = new PIXI.Graphics();
         Config.app.stage.addChild(this._representation);
     }
 
-    public move(factor: number){
+    public destroy() {
+        if (this._destroyed) return;
+
+        this._destroyed = true;
+        this.owner.removeProjectile(this);
+
+        this._representation.destroy();
+        this.owner = null;
+        this.target = null;
+        this.position = null;
+    }
+
+    public move(factor: number) {
 		if (this._endReached) {
 			return;
 		}
@@ -73,14 +87,21 @@ class Projectile implements Renderable, Tickable {
         //if the projectile overlaps the enemy at 90%
 		if (delta.weight() <= this.size/10) {
             this._endReached = true;
-            this._representation.destroy();
             this.target.hit(this.owner);
-            this.owner.removeProjectile(this);
+            this.destroy();
 		}
 		//console.log(this.position);
     };
     
     onTick(deltaTime: number): void {
+        if (this._destroyed) {
+            return;
+        }
+        if (this.target.destroyed) {
+            this.destroy();
+            return;
+        }
+        
         this.move(deltaTime/1000);
         if (!this._endReached){
             let pos = this.position.toPixelPos();

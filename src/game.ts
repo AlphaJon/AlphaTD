@@ -48,6 +48,7 @@ class Game implements Renderable, Tickable{
 	public getEnemiesInRange(position: GridPosition, range: number): Enemy[]{
 		let rangeSquared = range*range;
 		let result = this.enemyList.filter(function(en){
+			if (en.destroyed) return false;
 			//Inside this function, this = position
 			let enGridPos = en.position;
 			let xdiff = Math.abs(this.x - enGridPos.x);
@@ -111,7 +112,7 @@ class Game implements Renderable, Tickable{
 			//console.log(en);
 			en.onTick(deltaTime);
 			//en.render();
-			return en.isValid();
+			return !en.destroyed && en.isValid();
 			//return true;
 		}, this);
 	
