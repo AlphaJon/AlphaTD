@@ -8,7 +8,6 @@
 /// <reference path="enemy.ts" />
 /// <reference path="tower.ts" />
 /// <reference path="test.ts" />
-export * from "./common.js";
 export * from "./position.js";
 export * from "./config.js";
 export * from "./game.js";

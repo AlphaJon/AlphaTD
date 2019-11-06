@@ -103,6 +103,7 @@ class Enemy implements Renderable, Tickable{
 			//console.log(points);
 			if (this.currentPathPoint == points.length) {
 				this.endReached = true;
+				this.destroy();
 			}
 		}
 		//console.log(this.position);

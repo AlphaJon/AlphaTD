@@ -75,6 +75,7 @@ var Enemy = /** @class */ (function () {
             //console.log(points);
             if (this.currentPathPoint == points.length) {
                 this.endReached = true;
+                this.destroy();
             }
         }
         //console.log(this.position);

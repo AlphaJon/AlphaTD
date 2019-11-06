@@ -25,3 +25,9 @@ class Config {
 Config.app.loader
 	.add("grid", "img/grid.png")
 	.add("tower", "img/tower.png");
+
+Config.app.ticker.autoStart = false;
+Config.app.ticker.add(function (deltaTime: number) {
+	//Config.currentGame.onTick(deltaTime);
+	document.getElementById("fpscounter").innerHTML = "" + Config.app.ticker.FPS;
+})

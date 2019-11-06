@@ -13,6 +13,7 @@ var Game = /** @class */ (function () {
         this.towerList = [];
         this.enemyList = [];
         this.pendingEnemyList = [];
+        Config.app.ticker.add(this.onTick, this);
         this.render();
     }
     Object.defineProperty(Game.prototype, "money", {
@@ -77,6 +78,9 @@ var Game = /** @class */ (function () {
         this.waveNumber++;
     };
     Game.prototype.onTick = function (deltaTime) {
+        //console.log(Config.app.ticker.elapsedMS);
+        //deltaTime = Config.app.ticker.elapsedMS;
+        deltaTime = deltaTime * 20;
         //Note: filter does not modify non-objects
         //But here that's OK because we are processing objects
         this.pendingEnemyList = this.pendingEnemyList.filter(function (pendingEn) {
@@ -104,41 +108,17 @@ var Game = /** @class */ (function () {
     };
     Game.prototype.pause = function () {
         Config.paused = true;
-        window.cancelAnimationFrame(animationFrameId);
+        Config.app.ticker.stop();
+        //window.cancelAnimationFrame(animationFrameId);
     };
     Game.prototype.render = function () {
         this.level.render();
     };
     Game.prototype.resume = function () {
         Config.paused = false;
-        animationFrameId = window.requestAnimationFrame(initGameTick);
+        Config.app.ticker.start();
+        //animationFrameId = window.requestAnimationFrame(initGameTick);
     };
     return Game;
 }());
-var animationFrameId = null;
-var lastframe = 0;
-function initGameTick(timestamp) {
-    lastframe = timestamp;
-    requestAnimationFrame(gameTick);
-}
-function gameTick(timestamp) {
-    var deltaTime = timestamp - lastframe;
-    var fps = 1000 / deltaTime;
-    /*var render = Config.canvasRender;
-    
-    
-    render.clearRect(0,0,
-        Config.canvas.width,
-        Config.canvas.height);*/
-    //Config.currentGame.render();
-    //console.log(timestamp);
-    //console.log(deltaTime);
-    //console.log(game.enemyList);
-    Config.currentGame.onTick(deltaTime);
-    document.getElementById("fpscounter").innerHTML = "" + Math.round(fps);
-    lastframe = timestamp;
-    if (!(Config.paused)) {
-        animationFrameId = window.requestAnimationFrame(gameTick);
-    }
-}
 //# sourceMappingURL=game.js.map
