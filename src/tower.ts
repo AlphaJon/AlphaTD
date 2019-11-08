@@ -1,7 +1,6 @@
 /// <reference path="references.ts" />
 
-import {Config, Renderable, Tickable, GridPosition, Enemy} from "./references.js";
-import { Projectile } from "./projectile.js";
+import {Config, Renderable, Tickable, GridPosition, Enemy, Projectile, effects } from "./references.js";
 export {Tower, towerList}
 
 interface TowerData {
@@ -10,7 +9,7 @@ interface TowerData {
 	damage: number;
 	range: number;
 	projectileSpeed: number;
-	effects: any[];
+	effects: ((_: Projectile)=>void)[];
 }
 
 let defaultTower:TowerData = {
@@ -19,7 +18,7 @@ let defaultTower:TowerData = {
 	damage: 1,
 	range: 3,
 	projectileSpeed: 10,
-	effects: []
+	effects: [effects.AOEeffect]
 }
 
 let towerList = {
@@ -36,14 +35,14 @@ class Tower implements Renderable, Tickable{
 	public baseRange: number;
 
 	public projectileSpeed: number;
-	public effects: any[];
+	public effects: ((_: Projectile)=>void)[];
 
 	private reloadProgress: number;
 	public gridPosition: GridPosition;
 	private thrownProjectiles: Projectile[];
 
 	constructor(baseTowerStats:TowerData) {
-		console.log(this);
+		//console.log(this);
 		this.level = 1;
 		this.cost = baseTowerStats.cost;
 		this.baseAttackSpeed = baseTowerStats.attackSpeed;

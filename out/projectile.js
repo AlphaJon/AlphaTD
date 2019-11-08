@@ -64,7 +64,7 @@ var Projectile = /** @class */ (function () {
         //if the projectile overlaps the enemy at 90%
         if (delta.weight() <= this.size / 10) {
             this._endReached = true;
-            this.target.hit(this.owner);
+            this.target.hit(this);
             this.destroy();
         }
         //console.log(this.position);

@@ -1,6 +1,5 @@
 /// <reference path="references.ts" />
-import { Config } from "./references.js";
-import { Projectile } from "./projectile.js";
+import { Config, Projectile, effects } from "./references.js";
 export { Tower, towerList };
 var defaultTower = {
     cost: 10,
@@ -8,14 +7,14 @@ var defaultTower = {
     damage: 1,
     range: 3,
     projectileSpeed: 10,
-    effects: []
+    effects: [effects.AOEeffect]
 };
 var towerList = {
     "defaultTower": defaultTower
 };
 var Tower = /** @class */ (function () {
     function Tower(baseTowerStats) {
-        console.log(this);
+        //console.log(this);
         this.level = 1;
         this.cost = baseTowerStats.cost;
         this.baseAttackSpeed = baseTowerStats.attackSpeed;

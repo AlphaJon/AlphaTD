@@ -48,14 +48,14 @@ class Game implements Renderable, Tickable{
 
 	public getEnemiesInRange(position: GridPosition, range: number): Enemy[]{
 		let rangeSquared = range*range;
-		let result = this.enemyList.filter(function(en){
+		let result = this.enemyList.filter(function(en: Enemy){
 			if (en.destroyed) return false;
 			//Inside this function, this = position
 			let enGridPos = en.position;
-			let xdiff = Math.abs(this.x - enGridPos.x);
-			let ydiff = Math.abs(this.y - enGridPos.y);
+			let xdiff = Math.abs(position.x - enGridPos.x);
+			let ydiff = Math.abs(position.y - enGridPos.y);
 			return xdiff*xdiff + ydiff*ydiff <= rangeSquared;
-		}, position);
+		});
 		return result;
 	}
 
@@ -113,10 +113,11 @@ class Game implements Renderable, Tickable{
 		}, this);
 	
 		this.enemyList = this.enemyList.filter(function(en){
+			if (en.destroyed) return false;
 			//console.log(en);
 			en.onTick(deltaTime);
 			//en.render();
-			return !en.destroyed && en.isValid();
+			return en.isValid();
 			//return true;
 		}, this);
 	

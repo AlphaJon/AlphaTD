@@ -40,10 +40,10 @@ var Game = /** @class */ (function () {
                 return false;
             //Inside this function, this = position
             var enGridPos = en.position;
-            var xdiff = Math.abs(this.x - enGridPos.x);
-            var ydiff = Math.abs(this.y - enGridPos.y);
+            var xdiff = Math.abs(position.x - enGridPos.x);
+            var ydiff = Math.abs(position.y - enGridPos.y);
             return xdiff * xdiff + ydiff * ydiff <= rangeSquared;
-        }, position);
+        });
         return result;
     };
     //note: probably more efficient but unstable when there are holes in array
@@ -95,10 +95,12 @@ var Game = /** @class */ (function () {
             return true;
         }, this);
         this.enemyList = this.enemyList.filter(function (en) {
+            if (en.destroyed)
+                return false;
             //console.log(en);
             en.onTick(deltaTime);
             //en.render();
-            return !en.destroyed && en.isValid();
+            return en.isValid();
             //return true;
         }, this);
         this.towerList.map(function (twr) {

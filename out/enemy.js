@@ -51,7 +51,10 @@ var Enemy = /** @class */ (function () {
         this.effects = null;
     };
     Enemy.prototype.hit = function (origin) {
-        this.currentHealth -= origin.baseDamage;
+        origin.owner.effects.forEach(function (effect) {
+            effect(origin);
+        });
+        this.currentHealth -= origin.owner.baseDamage;
     };
     Enemy.prototype.isValid = function () {
         return !(this.endReached) && this._currentHealth > 0;

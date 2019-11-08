@@ -3,6 +3,7 @@
 import {
 	Config, Renderable, Tickable, GridPosition, Vector, Tower
 } from "./references.js";
+import { Projectile } from "./projectile.js";
 export {Enemy, EnemyData}
 
 interface EnemyData {
@@ -73,8 +74,11 @@ class Enemy implements Renderable, Tickable{
 		this.effects = null;
 	}
 
-	public hit(origin: Tower) {
-		this.currentHealth -= origin.baseDamage;
+	public hit(origin: Projectile) {
+		origin.owner.effects.forEach(function(effect){
+			effect(origin);
+		});
+		this.currentHealth -= origin.owner.baseDamage;
 	}
 
 	public isValid() {
