@@ -3,10 +3,10 @@ import { Config, Projectile, effects } from "./references.js";
 export { Tower, towerList };
 var defaultTower = {
     cost: 10,
-    attackSpeed: 5,
+    attackSpeed: 1,
     damage: 1,
     range: 3,
-    projectileSpeed: 10,
+    projectileSpeed: 5,
     effects: [effects.AOEeffect]
 };
 var towerList = {
@@ -16,7 +16,7 @@ var Tower = /** @class */ (function () {
     function Tower(baseTowerStats) {
         //console.log(this);
         this.level = 1;
-        this.cost = baseTowerStats.cost;
+        this.totalCost = baseTowerStats.cost;
         this.baseAttackSpeed = baseTowerStats.attackSpeed;
         this.baseRange = baseTowerStats.range;
         this.baseDamage = baseTowerStats.damage;

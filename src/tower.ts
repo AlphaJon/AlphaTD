@@ -14,10 +14,10 @@ interface TowerData {
 
 let defaultTower:TowerData = {
 	cost: 10,
-	attackSpeed: 5,
+	attackSpeed: 1,
 	damage: 1,
 	range: 3,
-	projectileSpeed: 10,
+	projectileSpeed: 5,
 	effects: [effects.AOEeffect]
 }
 
@@ -28,7 +28,7 @@ let towerList = {
 class Tower implements Renderable, Tickable{
 	//public position: GridPosition;
 	public level: number;
-	public cost: number;
+	public totalCost: number;
 
 	public baseAttackSpeed: number;
 	public baseDamage: number;
@@ -44,7 +44,7 @@ class Tower implements Renderable, Tickable{
 	constructor(baseTowerStats:TowerData) {
 		//console.log(this);
 		this.level = 1;
-		this.cost = baseTowerStats.cost;
+		this.totalCost = baseTowerStats.cost;
 		this.baseAttackSpeed = baseTowerStats.attackSpeed;
 		this.baseRange = baseTowerStats.range;
 		this.baseDamage = baseTowerStats.damage;

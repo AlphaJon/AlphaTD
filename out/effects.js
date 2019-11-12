@@ -5,19 +5,40 @@ var effects = {
         var explosion = new PIXI.Graphics();
         Config.app.stage.addChild(explosion);
         var enemyPos = projectile.target.position.toPixelPos();
-        explosion.lineStyle(3, 0xFF0000)
+        explosion
             //.beginFill(0xFF0000)
-            .drawCircle(0, 0, 3 * Config.gridSquareSize)
+            //.drawCircle(0, 0, 3*Config.gridSquareSize)
             //.endFill()
             .position.set(enemyPos.x, enemyPos.y);
         var enemiesinRange = Config.currentGame.getEnemiesInRange(projectile.position, 3);
         for (var index = 0; index < enemiesinRange.length; index++) {
             var element = enemiesinRange[index];
-            element.currentHealth -= projectile.owner.baseDamage;
+            if (element !== projectile.target) {
+                element.currentHealth -= projectile.owner.baseDamage;
+            }
         }
-        setTimeout(function name() {
+        var ticker = new PIXI.ticker.Ticker();
+        var scale = 0;
+        ticker.add(function (deltaTime) {
+            explosion.clear();
+            if (scale > 1) {
+                explosion.destroy();
+                ticker.destroy();
+                return;
+            }
+            explosion
+                .lineStyle(5, 0xFFFFFF)
+                .drawCircle(0, 0, 3 * scale * Config.gridSquareSize)
+                .lineStyle(3, 0x00FFFF)
+                .drawCircle(0, 0, 3 * scale * Config.gridSquareSize);
+            scale += deltaTime;
+        });
+        ticker.speed = 0.05;
+        ticker.start();
+        /*setTimeout(function() {
             explosion.destroy();
-        }, 50);
+            explosion = null;
+        }, 50)*/
     }
 };
 //# sourceMappingURL=effects.js.map

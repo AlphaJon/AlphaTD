@@ -16,21 +16,45 @@ let effects: effectFunctionObject = {
 
         let enemyPos = projectile.target.position.toPixelPos();
 
-        explosion.lineStyle(3, 0xFF0000)
+        explosion
         //.beginFill(0xFF0000)
-        .drawCircle(0, 0, 3*Config.gridSquareSize)
+        //.drawCircle(0, 0, 3*Config.gridSquareSize)
         //.endFill()
         .position.set(enemyPos.x, enemyPos.y);
         
         let enemiesinRange = Config.currentGame.getEnemiesInRange(projectile.position, 3);
         for (let index = 0; index < enemiesinRange.length; index++) {
             const element = enemiesinRange[index];
-            element.currentHealth -= projectile.owner.baseDamage;
+            if (element !== projectile.target){
+                element.currentHealth -= projectile.owner.baseDamage;
+            }
+            
         }
+
+        let ticker = new PIXI.ticker.Ticker();
+        let scale = 0;
+        ticker.add(function(deltaTime: number){
+            explosion.clear();
+            if (scale > 1){
+                explosion.destroy();
+                ticker.destroy();
+                return;
+            }
+            
+            explosion
+                .lineStyle(5, 0xFFFFFF)
+                .drawCircle(0, 0, 3*scale*Config.gridSquareSize)
+                .lineStyle(3, 0x00FFFF)
+                .drawCircle(0, 0, 3*scale*Config.gridSquareSize)
+                ;
+            scale += deltaTime;
+        });
+        ticker.speed = 0.05;
+        ticker.start();
         
-        
-        setTimeout(function name() {
+        /*setTimeout(function() {
             explosion.destroy();
-        }, 50)
+            explosion = null;
+        }, 50)*/
     }
 }
