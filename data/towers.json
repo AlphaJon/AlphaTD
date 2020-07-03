@@ -1,0 +1,10 @@
+{
+    "default": {
+        "cost": 10,
+        "attackSpeed": 1,
+        "damage": 1,
+        "range": 3,
+        "projectileSpeed": 5,
+        "effects": ["AOEeffect"]
+    }
+}

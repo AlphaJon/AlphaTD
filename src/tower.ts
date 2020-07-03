@@ -1,6 +1,7 @@
 /// <reference path="references.ts" />
 
 import {Config, Renderable, Tickable, GridPosition, Enemy, Projectile, effects } from "./references.js";
+import {TowerRenderer} from "./renderers/towerRenderer.js";
 export {Tower, towerList}
 
 interface TowerData {
@@ -25,6 +26,10 @@ let towerList = {
 	"defaultTower": defaultTower
 }
 
+function JSONtoTower(jsonData: string): { string: Partial<TowerData>} {
+	return JSON.parse(jsonData);
+}
+
 class Tower implements Renderable, Tickable{
 	//public position: GridPosition;
 	public level: number;
@@ -41,6 +46,8 @@ class Tower implements Renderable, Tickable{
 	public gridPosition: GridPosition;
 	private thrownProjectiles: Projectile[];
 
+	private renderer: TowerRenderer;
+
 	constructor(baseTowerStats:TowerData) {
 		//console.log(this);
 		this.level = 1;
@@ -53,6 +60,7 @@ class Tower implements Renderable, Tickable{
 		this.effects = baseTowerStats.effects;
 		this.reloadProgress = 0;
 		this.thrownProjectiles = [];
+		this.renderer = new TowerRenderer(this);
 	}
 
 	public fireAtEnemy(enemy: Enemy, count = 1) {
@@ -99,12 +107,6 @@ class Tower implements Renderable, Tickable{
 	}
 
 	render() {
-		let pos = this.gridPosition.toPixelPos();
-		let cell = new PIXI.Sprite(PIXI.Texture.fromImage("img/tower.png"));
-		cell.width = Config.gridSquareSize;
-		cell.height = Config.gridSquareSize;
-		cell.x = pos.x;
-		cell.y = pos.y;
-		Config.app.stage.addChild(cell);
+		this.renderer.render();
 	}
 }

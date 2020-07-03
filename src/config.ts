@@ -1,4 +1,4 @@
-/// <reference path="references.ts" />
+//// <reference path="references.ts" />
 
 import {Game, PixelPosition} from "./references.js";
 export {Config};
@@ -24,7 +24,12 @@ class Config {
 
 Config.app.loader
 	.add("grid", "img/grid.png")
-	.add("tower", "img/tower.png");
+	.add("tower", "img/tower.png")
+	.load((loader: PIXI.loaders.Loader, resources:PIXI.loaders.Resource[]) => {
+		resources.forEach(function resourceHandle(res) {
+			//TODO
+		})
+	});
 
 Config.app.ticker.autoStart = false;
 Config.app.ticker.add(function (deltaTime: number) {
