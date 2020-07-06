@@ -25,7 +25,7 @@ var Projectile = /** @class */ (function () {
         get: function () {
             return this._endReached;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Projectile.prototype, "weight", {
@@ -36,7 +36,7 @@ var Projectile = /** @class */ (function () {
             this._weight = value;
             this.size = Projectile.defaultSize + Math.min(value - 1, 5);
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Projectile.prototype.destroy = function () {
@@ -45,9 +45,9 @@ var Projectile = /** @class */ (function () {
         this._destroyed = true;
         this.owner.removeProjectile(this);
         this._representation.destroy();
-        this.owner = null;
-        this.target = null;
-        this.position = null;
+        delete this.owner;
+        delete this.target;
+        delete this.position;
     };
     Projectile.prototype.move = function (factor) {
         if (this._endReached) {

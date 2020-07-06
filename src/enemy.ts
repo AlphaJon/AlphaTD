@@ -70,8 +70,8 @@ class Enemy implements Renderable, Tickable{
 
 		this._destroyed = true;
 		this._representation.destroy();
-		this.position = null;
-		this.effects = null;
+		delete this.position;
+		delete this.effects;
 	}
 
 	public hit(origin: Projectile) {

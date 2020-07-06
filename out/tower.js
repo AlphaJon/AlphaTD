@@ -1,5 +1,6 @@
 /// <reference path="references.ts" />
 import { Config, Projectile, effects } from "./references.js";
+import { TowerRenderer } from "./renderers/towerRenderer.js";
 export { Tower, towerList };
 var defaultTower = {
     cost: 10,
@@ -7,23 +8,28 @@ var defaultTower = {
     damage: 1,
     range: 3,
     projectileSpeed: 5,
-    effects: [effects.AOEeffect]
+    effects: ["AOEeffect"]
 };
 var towerList = {
     "defaultTower": defaultTower
 };
+function JSONtoTower(jsonData) {
+    return JSON.parse(jsonData);
+}
 var Tower = /** @class */ (function () {
     function Tower(baseTowerStats) {
+        var _a, _b, _c, _d, _e;
         //console.log(this);
         this.level = 1;
-        this.totalCost = baseTowerStats.cost;
-        this.baseAttackSpeed = baseTowerStats.attackSpeed;
-        this.baseRange = baseTowerStats.range;
-        this.baseDamage = baseTowerStats.damage;
-        this.projectileSpeed = baseTowerStats.projectileSpeed;
-        this.effects = baseTowerStats.effects;
+        this.totalCost = (_a = baseTowerStats.cost) !== null && _a !== void 0 ? _a : 0;
+        this.baseAttackSpeed = (_b = baseTowerStats.attackSpeed) !== null && _b !== void 0 ? _b : 1;
+        this.baseRange = (_c = baseTowerStats.range) !== null && _c !== void 0 ? _c : 1;
+        this.baseDamage = (_d = baseTowerStats.damage) !== null && _d !== void 0 ? _d : 0;
+        this.projectileSpeed = (_e = baseTowerStats.projectileSpeed) !== null && _e !== void 0 ? _e : 1;
+        this.effects = baseTowerStats.effects ? baseTowerStats.effects.map(function (eff) { return effects[eff]; }) : [];
         this.reloadProgress = 0;
         this.thrownProjectiles = [];
+        this.renderer = new TowerRenderer(this);
     }
     Tower.prototype.fireAtEnemy = function (enemy, count) {
         if (count === void 0) { count = 1; }
@@ -65,13 +71,7 @@ var Tower = /** @class */ (function () {
         });
     };
     Tower.prototype.render = function () {
-        var pos = this.gridPosition.toPixelPos();
-        var cell = new PIXI.Sprite(PIXI.Texture.fromImage("img/tower.png"));
-        cell.width = Config.gridSquareSize;
-        cell.height = Config.gridSquareSize;
-        cell.x = pos.x;
-        cell.y = pos.y;
-        Config.app.stage.addChild(cell);
+        this.renderer.render();
     };
     return Tower;
 }());

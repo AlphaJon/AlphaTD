@@ -1,10 +1,9 @@
-/// <reference path="references.ts" />
+//// <reference path="references.ts" />
 import { PixelPosition } from "./references.js";
 export { Config };
 var Config = /** @class */ (function () {
     function Config() {
     }
-    Config.currentGame = null;
     Config.paused = true;
     Config.gridSquareSize = 32; //size of one grid square in pixels
     Config.gridOffset = new PixelPosition(0, 0);
@@ -24,10 +23,18 @@ var Config = /** @class */ (function () {
 ;
 Config.app.loader
     .add("grid", "img/grid.png")
-    .add("tower", "img/tower.png");
+    .add("tower", "img/tower.png")
+    .load(function (loader, resources) {
+    resources.forEach(function resourceHandle(res) {
+        //TODO
+    });
+});
 Config.app.ticker.autoStart = false;
 Config.app.ticker.add(function (deltaTime) {
     //Config.currentGame.onTick(deltaTime);
-    document.getElementById("fpscounter").innerHTML = "" + Config.app.ticker.FPS;
+    var fpscounter = document.getElementById("fpscounter");
+    if (fpscounter !== null) {
+        fpscounter.innerHTML = "" + Config.app.ticker.FPS;
+    }
 });
 //# sourceMappingURL=config.js.map

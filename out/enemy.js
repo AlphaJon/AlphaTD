@@ -32,14 +32,14 @@ var Enemy = /** @class */ (function () {
             }
             this._currentHealth = value;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Object.defineProperty(Enemy.prototype, "destroyed", {
         get: function () {
             return this._destroyed;
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Enemy.prototype.destroy = function () {
@@ -47,8 +47,8 @@ var Enemy = /** @class */ (function () {
             return;
         this._destroyed = true;
         this._representation.destroy();
-        this.position = null;
-        this.effects = null;
+        delete this.position;
+        delete this.effects;
     };
     Enemy.prototype.hit = function (origin) {
         origin.owner.effects.forEach(function (effect) {

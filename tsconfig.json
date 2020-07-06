@@ -9,7 +9,7 @@
         "module": "es2015",
         "noResolve": true,
         //"allowSyntheticDefaultImports": true,
-        "strictNullChecks": false,
+        "strictNullChecks": true,
     },
     "include": [
         "./src/**/*"

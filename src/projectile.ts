@@ -64,9 +64,9 @@ class Projectile implements Renderable, Tickable {
         this.owner.removeProjectile(this);
 
         this._representation.destroy();
-        this.owner = null;
-        this.target = null;
-        this.position = null;
+        delete this.owner;
+        delete this.target;
+        delete this.position;
     }
 
     public move(factor: number) {

@@ -15,22 +15,22 @@ Config.canvas.onclick = function(event){
 	testSpawnTower(new PixelPosition(x, y).toGridPos());
 }
 
-document.getElementById('level1').onclick = function(event){
+document.getElementById('level1')!.onclick = function(event){
 	console.log('Level 1 loaded');
 	Config.currentGame = new Game(0);
 }
 
-document.getElementById('wave').onclick = function(event){
+document.getElementById('wave')!.onclick = function(event){
 	var wave = Config.currentGame.getCurrentWave();
 	Config.currentGame.launchNextWave();
 	Config.currentGame.waveNumber--;
 }
 
-document.getElementById("start").onclick = function (event) {
+document.getElementById("start")!.onclick = function (event) {
 	Config.currentGame.resume();
 }
 
-document.getElementById("pause").onclick = function (event) {
+document.getElementById("pause")!.onclick = function (event) {
 	Config.currentGame.pause();
 }
 

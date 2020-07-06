@@ -4,7 +4,7 @@ import {Game, PixelPosition} from "./references.js";
 export {Config};
 
 class Config {
-	static currentGame:Game = null;
+	static currentGame:Game;
 	static paused = true;
 	static gridSquareSize = 32; //size of one grid square in pixels
 	static gridOffset: PixelPosition = new PixelPosition(0, 0);
@@ -34,5 +34,9 @@ Config.app.loader
 Config.app.ticker.autoStart = false;
 Config.app.ticker.add(function (deltaTime: number) {
 	//Config.currentGame.onTick(deltaTime);
-	document.getElementById("fpscounter").innerHTML = "" + Config.app.ticker.FPS;
+	let fpscounter = document.getElementById("fpscounter");
+	if (fpscounter !== null) {
+		fpscounter.innerHTML = "" + Config.app.ticker.FPS;
+	}
+	
 })

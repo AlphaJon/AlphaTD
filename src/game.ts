@@ -24,7 +24,10 @@ class Game implements Renderable, Tickable{
 
 	set money(value: number){
 		this._money = value;
-		document.querySelector("#moneydisplay").innerHTML = "" + value;
+		let moneyTag = document.querySelector("#moneydisplay");
+		if (moneyTag !== null) {
+			moneyTag.innerHTML = "" + value;
+		}
 	}
 
 	constructor(intLevel:number) {

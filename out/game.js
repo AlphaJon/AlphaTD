@@ -22,9 +22,12 @@ var Game = /** @class */ (function () {
         },
         set: function (value) {
             this._money = value;
-            document.querySelector("#moneydisplay").innerHTML = "" + value;
+            var moneyTag = document.querySelector("#moneydisplay");
+            if (moneyTag !== null) {
+                moneyTag.innerHTML = "" + value;
+            }
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     Game.prototype.getCurrentWave = function () {
