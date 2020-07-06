@@ -10,7 +10,8 @@ interface TowerData {
 	damage: number;
 	range: number;
 	projectileSpeed: number;
-	effects: ((_: Projectile)=>void)[];
+	//effects: ((_: Projectile)=>void)[];
+	effects: (keyof typeof effects)[];
 }
 
 let defaultTower:TowerData = {
@@ -19,7 +20,7 @@ let defaultTower:TowerData = {
 	damage: 1,
 	range: 3,
 	projectileSpeed: 5,
-	effects: [effects.AOEeffect]
+	effects: ["AOEeffect"]
 }
 
 let towerList = {
@@ -48,16 +49,16 @@ class Tower implements Renderable, Tickable{
 
 	private renderer: TowerRenderer;
 
-	constructor(baseTowerStats:TowerData) {
+	constructor(baseTowerStats:Partial<TowerData>) {
 		//console.log(this);
 		this.level = 1;
-		this.totalCost = baseTowerStats.cost;
-		this.baseAttackSpeed = baseTowerStats.attackSpeed;
-		this.baseRange = baseTowerStats.range;
-		this.baseDamage = baseTowerStats.damage;
+		this.totalCost = baseTowerStats.cost ?? 0;
+		this.baseAttackSpeed = baseTowerStats.attackSpeed ?? 1;
+		this.baseRange = baseTowerStats.range ?? 1;
+		this.baseDamage = baseTowerStats.damage ?? 0;
 
-		this.projectileSpeed = baseTowerStats.projectileSpeed;
-		this.effects = baseTowerStats.effects;
+		this.projectileSpeed = baseTowerStats.projectileSpeed ?? 1;
+		this.effects = baseTowerStats.effects ? baseTowerStats.effects.map((eff) => effects[eff]) : [];
 		this.reloadProgress = 0;
 		this.thrownProjectiles = [];
 		this.renderer = new TowerRenderer(this);
