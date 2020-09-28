@@ -1,22 +1,21 @@
-/// <reference path="references.ts" />
-import {
-	Config, Level, WaveData, GridPosition, 
-	Renderable, Tickable, Tower, Enemy
-} from "./references.js";
-
-export {Game}
-
+import { LevelData, WaveData } from "./data/levelData.js";
+import { Enemy } from "./enemy.js";
+import { app, towers } from "./init.js";
+import { Level } from "./level.js";
+import { Tower } from "./tower.js";
+import { GridPosition } from "./utility/position.js";
 
 /**
  * Starts a new game based on a given level, builds level from levelData
  */
-class Game implements Renderable, Tickable{
+export class Game implements Tickable {
+	public paused = false;
 	public level: Level;
 	public waveNumber: number = 0;
 	public towerList: Tower[];
 	public enemyList: Enemy[];
 	public pendingEnemyList: {enemy:Enemy, delay:number}[];
-	private _money: number;
+	private _money!: number;
 
 	get money(): number{
 		return this._money;
@@ -30,14 +29,14 @@ class Game implements Renderable, Tickable{
 		}
 	}
 
-	constructor(intLevel:number) {
-		this.level = new Level(intLevel);
-		this.money = this.level.startingMoney;
+	constructor(levelData: LevelData) {
+		this.level = new Level(levelData, this);
+		this.money = levelData.startingCurrency;
 		this.waveNumber = 0;
 		this.towerList = [];
 		this.enemyList = [];
 		this.pendingEnemyList = [];
-		Config.app.ticker.add(this.onTick, this);
+		app.ticker.add(this.onTick, this);
 		this.render();
 	}
 
@@ -87,7 +86,7 @@ class Game implements Renderable, Tickable{
 	public launchNextWave() {
 		var wave = this.getCurrentWave();
 		for (var i = 0; i < wave.enemyCount; i++) {
-			var en = new Enemy(wave.enemyStats);
+			var en = new Enemy(wave.enemyStats, this);
 			this.pendingEnemyList.push({
 				enemy: en,
 				delay: wave.delayBetweenSpawns * i
@@ -98,14 +97,13 @@ class Game implements Renderable, Tickable{
 	}
 
 	public onTick(deltaTime: number) {
-		//console.log(Config.app.ticker.elapsedMS);
-		//deltaTime = Config.app.ticker.elapsedMS;
+		//console.log(app.ticker.elapsedMS);
+		//deltaTime = app.ticker.elapsedMS;
 		deltaTime = deltaTime * 20;
-		//Note: filter does not modify non-objects
-		//But here that's OK because we are processing objects
-		this.pendingEnemyList = this.pendingEnemyList.filter(function(pendingEn){
+		this.pendingEnemyList = this.pendingEnemyList.filter(function(this: Game, pendingEn){
 			pendingEn.delay -= deltaTime;
 			if (pendingEn.delay <= 0) {
+				//Enemy ready to spawn
 				this.enemyList.push(pendingEn.enemy);
 				pendingEn.enemy.render();
 				//Remove element from array
@@ -131,9 +129,16 @@ class Game implements Renderable, Tickable{
 	}
 
 	public pause(){
-		Config.paused = true;
-		Config.app.ticker.stop();
+		this.paused = true;
+		app.ticker.stop();
 		//window.cancelAnimationFrame(animationFrameId);
+	}
+
+	public placeTower(towerData: TowerData, position: GridPosition){
+		if (this.money >= towerData.cost) {
+			let tower = new Tower(towerData, position, this);
+			this.towerList.push(tower);
+		}
 	}
 
 	public render(){
@@ -141,8 +146,8 @@ class Game implements Renderable, Tickable{
 	}
 
 	public resume(){
-		Config.paused = false;
-		Config.app.ticker.start();
+		this.paused = false;
+		app.ticker.start();
 		//animationFrameId = window.requestAnimationFrame(initGameTick);
 	}
 }

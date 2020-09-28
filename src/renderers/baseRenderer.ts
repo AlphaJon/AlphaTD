@@ -1,4 +1,4 @@
-export interface BaseRenderer {
-    render(): void;
+interface BaseRenderer {
+    render(...args: any): void;
     destroy(): void;
 }

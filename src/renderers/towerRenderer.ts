@@ -1,21 +1,16 @@
-import {BaseRenderer} from "./baseRenderer.js";
-import { Tower, Config } from "../references.js";
+import { app, textures } from "../init.js";
+import { Tower } from "../tower.js";
 
 export class TowerRenderer implements BaseRenderer {
-    private reference: Tower;
 
-    constructor(reference: Tower){
-        this.reference = reference;
-    }
-
-    render(): void {
-        let pos = this.reference.gridPosition.toPixelPos();
-		let cell = new PIXI.Sprite(PIXI.Texture.fromImage("img/tower.png"));
-		cell.width = Config.gridSquareSize;
-		cell.height = Config.gridSquareSize;
+    render(tower: Tower): void {
+        let pos = tower.gridPosition;
+		let cell = new PIXI.Sprite(textures["tower"]);
+		cell.width = 1;
+		cell.height = 1;
 		cell.x = pos.x;
 		cell.y = pos.y;
-		Config.app.stage.addChild(cell);
+		app.stage.addChild(cell);
     }
 
     destroy(): void {

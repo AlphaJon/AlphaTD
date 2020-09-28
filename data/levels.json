@@ -1,0 +1,25 @@
+[{
+    "startingCurrency": 100,
+    "width": 15,
+    "height": 12,
+	"spawnPoint": [0, 3.5],
+	"pathPoints" : [
+		[5.5, 3.5],
+		[5.5, 8.5],
+		[12.5, 8.5],
+		[12.5, 12]
+	],
+	"waves": [
+		{
+			"enemyCount": 5,
+			"delayBetweenSpawns": 500,
+			"enemyStats": {
+				"maxHealth": 10,
+				"speed": 1,
+				"size": 0.3,
+				"worth": 5,
+				"effects": []
+			}
+		}
+	]
+}]

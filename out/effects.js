@@ -1,24 +1,23 @@
-import { Config } from "./references.js";
-export { effects };
-var effects = {
+import { app } from "./init.js";
+let effects = {
     AOEeffect: function AOEeffect(projectile) {
-        var explosion = new PIXI.Graphics();
-        Config.app.stage.addChild(explosion);
-        var enemyPos = projectile.target.position.toPixelPos();
+        let explosion = new PIXI.Graphics();
+        app.stage.addChild(explosion);
+        let enemyPos = projectile.target.position.toPixelPos();
         explosion
             //.beginFill(0xFF0000)
             //.drawCircle(0, 0, 3*Config.gridSquareSize)
             //.endFill()
             .position.set(enemyPos.x, enemyPos.y);
-        var enemiesinRange = Config.currentGame.getEnemiesInRange(projectile.position, 3);
-        for (var index = 0; index < enemiesinRange.length; index++) {
-            var element = enemiesinRange[index];
+        let enemiesinRange = projectile.owner.game.getEnemiesInRange(projectile.position, 3);
+        for (let index = 0; index < enemiesinRange.length; index++) {
+            const element = enemiesinRange[index];
             if (element !== projectile.target) {
                 element.currentHealth -= projectile.owner.baseDamage;
             }
         }
-        var ticker = new PIXI.ticker.Ticker();
-        var scale = 0;
+        let ticker = new PIXI.Ticker();
+        let scale = 0;
         ticker.add(function (deltaTime) {
             explosion.clear();
             if (scale > 1) {
@@ -28,9 +27,9 @@ var effects = {
             }
             explosion
                 .lineStyle(5, 0xFFFFFF)
-                .drawCircle(0, 0, 3 * scale * Config.gridSquareSize)
+                .drawCircle(0, 0, 3 * scale)
                 .lineStyle(3, 0x00FFFF)
-                .drawCircle(0, 0, 3 * scale * Config.gridSquareSize);
+                .drawCircle(0, 0, 3 * scale);
             scale += deltaTime;
         });
         ticker.speed = 0.05;

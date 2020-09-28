@@ -1,54 +1,52 @@
-/// <reference path="references.ts" />
-import { Config, Level, Enemy } from "./references.js";
-export { Game };
+import { Enemy } from "./enemy.js";
+import { app } from "./init.js";
+import { Level } from "./level.js";
+import { Tower } from "./tower.js";
 /**
  * Starts a new game based on a given level, builds level from levelData
  */
-var Game = /** @class */ (function () {
-    function Game(intLevel) {
+export class Game {
+    constructor(levelData) {
+        this.paused = false;
         this.waveNumber = 0;
-        this.level = new Level(intLevel);
-        this.money = this.level.startingMoney;
+        this.level = new Level(levelData, this);
+        this.money = levelData.startingCurrency;
         this.waveNumber = 0;
         this.towerList = [];
         this.enemyList = [];
         this.pendingEnemyList = [];
-        Config.app.ticker.add(this.onTick, this);
+        app.ticker.add(this.onTick, this);
         this.render();
     }
-    Object.defineProperty(Game.prototype, "money", {
-        get: function () {
-            return this._money;
-        },
-        set: function (value) {
-            this._money = value;
-            var moneyTag = document.querySelector("#moneydisplay");
-            if (moneyTag !== null) {
-                moneyTag.innerHTML = "" + value;
-            }
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Game.prototype.getCurrentWave = function () {
+    get money() {
+        return this._money;
+    }
+    set money(value) {
+        this._money = value;
+        let moneyTag = document.querySelector("#moneydisplay");
+        if (moneyTag !== null) {
+            moneyTag.innerHTML = "" + value;
+        }
+    }
+    getCurrentWave() {
         return this.level.waves[this.waveNumber];
-    };
-    Game.prototype.getSpawnPoint = function () {
+    }
+    getSpawnPoint() {
         return this.level.spawnPoint;
-    };
-    Game.prototype.getEnemiesInRange = function (position, range) {
-        var rangeSquared = range * range;
-        var result = this.enemyList.filter(function (en) {
+    }
+    getEnemiesInRange(position, range) {
+        let rangeSquared = range * range;
+        let result = this.enemyList.filter(function (en) {
             if (en.destroyed)
                 return false;
             //Inside this function, this = position
-            var enGridPos = en.position;
-            var xdiff = Math.abs(position.x - enGridPos.x);
-            var ydiff = Math.abs(position.y - enGridPos.y);
+            let enGridPos = en.position;
+            let xdiff = Math.abs(position.x - enGridPos.x);
+            let ydiff = Math.abs(position.y - enGridPos.y);
             return xdiff * xdiff + ydiff * ydiff <= rangeSquared;
         });
         return result;
-    };
+    }
     //note: probably more efficient but unstable when there are holes in array
     //public getEnemiesInRange(position: GridPosition, range: number): Enemy[]{
     //	console.log(position);
@@ -69,26 +67,25 @@ var Game = /** @class */ (function () {
         var rawSpawn = this.level.spawnPoint;
         return rawSpawn;
     }*/
-    Game.prototype.launchNextWave = function () {
+    launchNextWave() {
         var wave = this.getCurrentWave();
         for (var i = 0; i < wave.enemyCount; i++) {
-            var en = new Enemy(wave.enemyStats);
+            var en = new Enemy(wave.enemyStats, this);
             this.pendingEnemyList.push({
                 enemy: en,
                 delay: wave.delayBetweenSpawns * i
             });
         }
         this.waveNumber++;
-    };
-    Game.prototype.onTick = function (deltaTime) {
-        //console.log(Config.app.ticker.elapsedMS);
-        //deltaTime = Config.app.ticker.elapsedMS;
+    }
+    onTick(deltaTime) {
+        //console.log(app.ticker.elapsedMS);
+        //deltaTime = app.ticker.elapsedMS;
         deltaTime = deltaTime * 20;
-        //Note: filter does not modify non-objects
-        //But here that's OK because we are processing objects
         this.pendingEnemyList = this.pendingEnemyList.filter(function (pendingEn) {
             pendingEn.delay -= deltaTime;
             if (pendingEn.delay <= 0) {
+                //Enemy ready to spawn
                 this.enemyList.push(pendingEn.enemy);
                 pendingEn.enemy.render();
                 //Remove element from array
@@ -110,20 +107,25 @@ var Game = /** @class */ (function () {
             twr.onTick(deltaTime);
             //twr.render();
         });
-    };
-    Game.prototype.pause = function () {
-        Config.paused = true;
-        Config.app.ticker.stop();
+    }
+    pause() {
+        this.paused = true;
+        app.ticker.stop();
         //window.cancelAnimationFrame(animationFrameId);
-    };
-    Game.prototype.render = function () {
+    }
+    placeTower(towerData, position) {
+        if (this.money >= towerData.cost) {
+            let tower = new Tower(towerData, position, this);
+            this.towerList.push(tower);
+        }
+    }
+    render() {
         this.level.render();
-    };
-    Game.prototype.resume = function () {
-        Config.paused = false;
-        Config.app.ticker.start();
+    }
+    resume() {
+        this.paused = false;
+        app.ticker.start();
         //animationFrameId = window.requestAnimationFrame(initGameTick);
-    };
-    return Game;
-}());
+    }
+}
 //# sourceMappingURL=game.js.map

@@ -1,35 +1,41 @@
-/// <reference types="pixi.js.d.ts" />
+import { WaveData, LevelData } from "./data/levelData.js";
+import { Game } from "./game.js";
+import { app, textures } from "./init.js";
+import { LevelRenderer } from "./renderers/levelRenderer.js";
+import { GridPosition } from "./utility/position.js";
 
-import {Renderable, GridPosition, Config, PixelPosition, EnemyData} from "./references.js";
-//import * as PIXI from "./pixi.js";
-export {Level, WaveData};
+export class Level {
+	static readonly emptyCell = 0;
+	static readonly pathCell = 1;
 
-class Level implements Renderable{
 	public spawnPoint: GridPosition;
 	public pathPoints: GridPosition[];
 	public waves: WaveData[];
-	public grid: number[][];
+	public grid!: number[][];
 	public startingMoney: number;
 
-	constructor(intLevel: number){
-		let data:LevelData = levelDataArray[intLevel];
+	private _renderer = new LevelRenderer();
+
+	constructor(data: LevelData, public game: Game){
 		this.startingMoney = data.startingCurrency;
-		this.spawnPoint = data.spawnPoint;
-		this.pathPoints = data.pathPoints;
+		this.spawnPoint = new GridPosition(...data.spawnPoint);
+		this.pathPoints = data.pathPoints.map(
+			point => new GridPosition(...point)
+		);
 		this.waves = data.waves;
-		this.generateGrid();
+		this.generateGrid(data.width, data.height);
 	}
 
-	private generateGrid(): void {
+	private generateGrid(width: number, height: number): void {
 		var startPoint:GridPosition = new GridPosition(
 			Math.floor(this.spawnPoint.x),
 			Math.floor(this.spawnPoint.y)
 		)
 		this.grid = [];
-		for (var i = 0; i < Config.gridCells.width; i++) {
+		for (var i = 0; i < width; i++) {
 			this.grid[i] = [];
-			for (var j = 0; j < Config.gridCells.height; j++) {
-				this.grid[i][j] = 0;
+			for (var j = 0; j < height; j++) {
+				this.grid[i][j] = Level.emptyCell;
 			}
 		}
 		this.grid[startPoint.x][startPoint.y] = 1;
@@ -62,82 +68,13 @@ class Level implements Renderable{
 					moved = true;
 					startPoint.y -= 1;
 				}
-				this.grid[startPoint.x][startPoint.y] = 1;
+				this.grid[startPoint.x][startPoint.y] = Level.pathCell;
 			}
 			
 		}
 	}
 
 	render(): void {
-		var app = Config.app;
-		let container = new PIXI.Container();
-		app.stage.addChild(container);
-		let texture = PIXI.Texture.fromImage("img/grid.png");
-
-		var size = Config.gridSquareSize;
-		var currentPos: PixelPosition = new PixelPosition(
-			Config.gridOffset.x,
-			Config.gridOffset.y,
-		);
-		//ctx.fillStyle("rgb(0,0,0)");
-		for (var i = 0; i < 15; i++) {
-			for (var j = 0; j < 12; j++) {
-				if (this.grid[i][j] == 0) {
-					var cell = new PIXI.Sprite(texture);
-					cell.width = size;
-					cell.height = size;
-					cell.x = currentPos.x;
-					cell.y = currentPos.y;
-					container.addChild(cell);
-				} else {
-					//ctx.strokeRect(currentPos.x, currentPos.y, size/2, size/2);
-					//ctx.strokeRect(currentPos.x + size/2, currentPos.y + size/2, size/2, size/2);
-					//ctx.fillRect(currentPos.x, currentPos.y, size, size);
-				}
-	
-				currentPos.y += size;
-			}
-			currentPos.x += size;
-			currentPos.y = Config.gridOffset.y;
-		}
+		this._renderer.render(this);
 	}
 }
-
-interface LevelData {
-	startingCurrency: number;
-	spawnPoint: GridPosition;
-	pathPoints: GridPosition[];
-	waves: WaveData[];
-}
-
-interface WaveData {
-	enemyCount: number;
-	delayBetweenSpawns: number;
-	enemyStats: EnemyData;
-}
-
-let levelDataArray:LevelData[] = [];
-
-levelDataArray[0] = {
-	startingCurrency: 100,
-	spawnPoint: new GridPosition(0, 3.5),
-	pathPoints : [
-		GridPosition.fromPoint({x: 5.5, y: 3.5}),
-		GridPosition.fromPoint({x: 5.5, y: 8.5}),
-		GridPosition.fromPoint({x: 12.5, y: 8.5}),
-		GridPosition.fromPoint({x: 12.5, y: 12})
-	],
-	waves: [
-		{
-			enemyCount: 5,
-			delayBetweenSpawns: 500,
-			enemyStats: {
-				maxHealth: 10,
-				speed: 1,
-				size: 0.3,
-				worth: 5,
-				effects: []
-			}
-		}
-	]
-};

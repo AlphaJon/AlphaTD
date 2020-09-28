@@ -1,4 +1,4 @@
-export class Vector {
+export class Vector2 {
 	public x: number;
 	public y: number;
 
@@ -11,11 +11,11 @@ export class Vector {
 		return Math.sqrt(this.x * this.x + this.y * this.y);
 	};
 
-	public normalize(): Vector {
+	public normalize(): Vector2 {
 		var weight = this.weight();
 		if (weight == 0) {
-			return new Vector(0,0);
+			return new Vector2(0,0);
 		}
-		return new Vector(this.x / weight, this.y / weight);
+		return new Vector2(this.x / weight, this.y / weight);
 	}
 }

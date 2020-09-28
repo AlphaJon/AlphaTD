@@ -1,5 +1,5 @@
 {
-    "default": {
+    "basic": {
         "cost": 10,
         "attackSpeed": 1,
         "damage": 1,

@@ -1,10 +1,9 @@
-import { Config, Cloneable } from "./references.js";
-export {GridPosition, PixelPosition};
-
 interface Point2D {
     x: number;
     y: number;
 }
+
+export type pointTuple = [number, number];
 
 abstract class BasePoint implements Point2D, Cloneable {
     x: number;
@@ -22,10 +21,7 @@ abstract class BasePoint implements Point2D, Cloneable {
     }
 }
 
-class GridPosition extends BasePoint{
-	x: number;
-    y: number;
-
+export class GridPosition extends BasePoint{
     static fromPoint(point: Point2D): GridPosition {
         return new GridPosition(point.x, point.y);
     }
@@ -34,18 +30,15 @@ class GridPosition extends BasePoint{
         return new GridPosition(this.x, this.y);
     }
 
-    toPixelPos(): PixelPosition {
+    toPixelPos(scalefactor: number = 32): PixelPosition {
         return new PixelPosition(
-            this.x * Config.gridSquareSize + Config.gridOffset.x,
-            this.y * Config.gridSquareSize + Config.gridOffset.y
+            this.x * scalefactor, // + Config.gridOffset.x,
+            this.y * scalefactor //+ Config.gridOffset.y
         );
     }
 }
 
-class PixelPosition extends BasePoint {
-	x: number;
-    y: number;
-
+export class PixelPosition extends BasePoint {
     static fromPoint(point: Point2D): PixelPosition {
         return new PixelPosition(point.x, point.y);
     }
@@ -54,10 +47,10 @@ class PixelPosition extends BasePoint {
         return new PixelPosition(this.x, this.y);
     }
 
-    toGridPos(): GridPosition {
+    toGridPos(scalefactor: number = 32): GridPosition {
         return new GridPosition(
-            Math.floor((this.x - Config.gridOffset.x)/Config.gridSquareSize),
-            Math.floor((this.y - Config.gridOffset.y)/Config.gridSquareSize)
+            Math.floor((this.x - 0)/scalefactor),
+            Math.floor((this.y - 0)/scalefactor)
         )
     }
 }

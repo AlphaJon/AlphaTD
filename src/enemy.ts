@@ -1,20 +1,10 @@
-/// <reference path="references.ts" />
-
-import {
-	Config, Renderable, Tickable, GridPosition, Vector, Tower
-} from "./references.js";
+import { Game } from "./game.js";
+import { app } from "./init.js";
 import { Projectile } from "./projectile.js";
-export {Enemy, EnemyData}
+import { GridPosition } from "./utility/position.js";
+import { Vector2 } from "./utility/vector.js";
 
-interface EnemyData {
-	maxHealth: number;
-	speed: number;
-	size: number;
-	worth: number;
-	effects: any[];
-}
-
-class Enemy implements Renderable, Tickable{
+export class Enemy implements Tickable{
 	
 	public position: GridPosition;
 	public maxHealth: number;
@@ -46,8 +36,8 @@ class Enemy implements Renderable, Tickable{
 		return this._destroyed;
 	}
 
-	constructor(stats: EnemyData) {
-		var pos = Config.currentGame.getSpawnPoint();
+	constructor(stats: EnemyData, public game: Game) {
+		var pos = game.getSpawnPoint();
 		//this.stats = clone(game.currentLevel.data.waves[game.currentWave].stats);
 
 		this.maxHealth = stats.maxHealth;
@@ -62,7 +52,7 @@ class Enemy implements Renderable, Tickable{
 		this.endReached = false;
 
 		this._representation = new PIXI.Graphics();
-		Config.app.stage.addChild(this._representation);
+		app.stage.addChild(this._representation);
 	}
 
 	public destroy() {
@@ -70,8 +60,6 @@ class Enemy implements Renderable, Tickable{
 
 		this._destroyed = true;
 		this._representation.destroy();
-		delete this.position;
-		delete this.effects;
 	}
 
 	public hit(origin: Projectile) {
@@ -89,10 +77,10 @@ class Enemy implements Renderable, Tickable{
 		if (this.endReached) {
 			return;
 		}
-		var size = Config.gridSquareSize;
-		var points = Config.currentGame.level.pathPoints
+		var size = 1;
+		var points = this.game.level.pathPoints
 		var destination = points[this.currentPathPoint];
-		var delta = new Vector(
+		var delta = new Vector2(
 			destination.x - this.position.x,
 			destination.y - this.position.y
 		);
@@ -113,7 +101,7 @@ class Enemy implements Renderable, Tickable{
 		//console.log(this.position);
 	};
 
-	public onTick(deltaTime){
+	public onTick(deltaTime: number){
 		if (this._destroyed) return;
 		this.move(deltaTime/1000);
 		if (this.isValid()){
@@ -132,7 +120,7 @@ class Enemy implements Renderable, Tickable{
 		//let topLeftCoords = this.topLeftPosition();
 		//let leftPx = topLeftCoords.x * Config.gridSquareSize + Config.gridOffset.x;
 		//let topPx = topLeftCoords.y * Config.gridSquareSize + Config.gridOffset.y;
-		let sizePx = this.size * Config.gridSquareSize;
+		let sizePx = this.size;
 		let colorHealth = Math.floor((this._currentHealth/this.maxHealth)*255);
 		this._representation
 			.lineStyle(1, 0x000000)

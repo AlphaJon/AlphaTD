@@ -4,16 +4,21 @@
         "outDir": "./out",
         "allowJs": true,
         "sourceMap": true,
-        "target": "es5",
-        //"composite": true,
-        "module": "es2015",
+        "target": "es6",
+        "module": "es6",
+        //"moduleResolution": "node",
         "noResolve": true,
         //"allowSyntheticDefaultImports": true,
+        "strict": true,
         "strictNullChecks": true,
+        //"typeRoots": [ "./node_modules/pixi.js" ]
     },
     "include": [
-        "./src/**/*"
+        "./src/**/*",
+        "./node_modules/pixi.js/pixi.js.d.ts",
+        //"./lib/*"
     ],
+    "references": []
     /*"exclude": [
         "./lib/*"
     ]*/

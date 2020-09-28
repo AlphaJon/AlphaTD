@@ -1,21 +1,16 @@
-import { Config } from "../references.js";
-var TowerRenderer = /** @class */ (function () {
-    function TowerRenderer(reference) {
-        this.reference = reference;
-    }
-    TowerRenderer.prototype.render = function () {
-        var pos = this.reference.gridPosition.toPixelPos();
-        var cell = new PIXI.Sprite(PIXI.Texture.fromImage("img/tower.png"));
-        cell.width = Config.gridSquareSize;
-        cell.height = Config.gridSquareSize;
+import { app, textures } from "../init.js";
+export class TowerRenderer {
+    render(tower) {
+        let pos = tower.gridPosition;
+        let cell = new PIXI.Sprite(textures["tower"]);
+        cell.width = 1;
+        cell.height = 1;
         cell.x = pos.x;
         cell.y = pos.y;
-        Config.app.stage.addChild(cell);
-    };
-    TowerRenderer.prototype.destroy = function () {
+        app.stage.addChild(cell);
+    }
+    destroy() {
         throw new Error("Method not implemented.");
-    };
-    return TowerRenderer;
-}());
-export { TowerRenderer };
+    }
+}
 //# sourceMappingURL=towerRenderer.js.map

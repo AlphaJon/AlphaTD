@@ -1,8 +1,8 @@
-import { 
-    Config, Enemy, Tower, Vector, GridPosition, Tickable, Renderable
-} from "./references.js";
-
-export { Projectile }
+import { Enemy } from "./enemy.js";
+import { app } from "./init.js";
+import { Tower } from "./tower.js";
+import { GridPosition } from "./utility/position.js";
+import { Vector2 } from "./utility/vector.js";
 
 let baseProjectileStats = {
 	stats: {},
@@ -12,22 +12,20 @@ let baseProjectileStats = {
 		y: 0
 	}
 };
-//baseProjectileStats.stats = baseTowerStats.stats.projectileStats;
 
-
-class Projectile implements Renderable, Tickable {
-    static defaultSize = 5;
+export class Projectile implements Tickable {
+    static readonly defaultSize = 5;
 
     public owner: Tower;
     public target: Enemy;
     public position: GridPosition;
     public speed: number;
-    public size: number;
+    public size!: number;
 
     private _destroyed: boolean;
     private _endReached: boolean;
     private _representation: PIXI.Graphics;
-    private _weight: number;
+    private _weight!: number;
 
     get endReached() {
         return this._endReached;
@@ -42,7 +40,7 @@ class Projectile implements Renderable, Tickable {
         this.size = Projectile.defaultSize + Math.min(value - 1, 5);
     }
 
-    constructor(owner: Tower, target: Enemy) {
+    constructor(owner: Tower, target: Enemy, weight = 1) {
         this.owner = owner;
         this.target = target;
         this.position = new GridPosition(
@@ -50,11 +48,12 @@ class Projectile implements Renderable, Tickable {
             owner.gridPosition.y + 0.5
             );
         this.speed = owner.projectileSpeed;
-        this.size = Projectile.defaultSize;
+        //this.size = Projectile.defaultSize;
+        this.weight = weight;
         this._destroyed = false;
         this._endReached = false;
         this._representation = new PIXI.Graphics();
-        Config.app.stage.addChild(this._representation);
+        app.stage.addChild(this._representation);
     }
 
     public destroy() {
@@ -64,9 +63,6 @@ class Projectile implements Renderable, Tickable {
         this.owner.removeProjectile(this);
 
         this._representation.destroy();
-        delete this.owner;
-        delete this.target;
-        delete this.position;
     }
 
     public move(factor: number) {
@@ -74,7 +70,7 @@ class Projectile implements Renderable, Tickable {
 			return;
 		}
 		var destination = this.target.position;
-		var delta = new Vector(
+		var delta = new Vector2(
 			destination.x - this.position.x,
 			destination.y - this.position.y
         );

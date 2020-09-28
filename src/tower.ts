@@ -1,38 +1,13 @@
-/// <reference path="references.ts" />
-
-import {Config, Renderable, Tickable, GridPosition, Enemy, Projectile, effects } from "./references.js";
+import { Enemy } from "./enemy.js";
+import { Game } from "./game.js";
+import { Projectile } from "./projectile.js";
 import {TowerRenderer} from "./renderers/towerRenderer.js";
-export {Tower, towerList}
+import { GridPosition } from "./utility/position.js";
+export {Tower}
 
-interface TowerData {
-	cost: number;
-	attackSpeed: number;
-	damage: number;
-	range: number;
-	projectileSpeed: number;
-	//effects: ((_: Projectile)=>void)[];
-	effects: (keyof typeof effects)[];
-}
+class Tower implements Tickable{
+	public game: Game;
 
-let defaultTower:TowerData = {
-	cost: 10,
-	attackSpeed: 1,
-	damage: 1,
-	range: 3,
-	projectileSpeed: 5,
-	effects: ["AOEeffect"]
-}
-
-let towerList = {
-	"defaultTower": defaultTower
-}
-
-function JSONtoTower(jsonData: string): { string: Partial<TowerData>} {
-	return JSON.parse(jsonData);
-}
-
-class Tower implements Renderable, Tickable{
-	//public position: GridPosition;
 	public level: number;
 	public totalCost: number;
 
@@ -47,21 +22,26 @@ class Tower implements Renderable, Tickable{
 	public gridPosition: GridPosition;
 	private thrownProjectiles: Projectile[];
 
-	private renderer: TowerRenderer;
+	private _renderer: TowerRenderer;
 
-	constructor(baseTowerStats:Partial<TowerData>) {
+	constructor(towerStats: TowerData, 
+		position: GridPosition,
+		game: Game) {
 		//console.log(this);
+		this.game = game;
 		this.level = 1;
-		this.totalCost = baseTowerStats.cost ?? 0;
-		this.baseAttackSpeed = baseTowerStats.attackSpeed ?? 1;
-		this.baseRange = baseTowerStats.range ?? 1;
-		this.baseDamage = baseTowerStats.damage ?? 0;
+		this.totalCost = towerStats.cost;
+		this.baseAttackSpeed = towerStats.attackSpeed;
+		this.baseRange = towerStats.range;
+		this.baseDamage = towerStats.damage;
 
-		this.projectileSpeed = baseTowerStats.projectileSpeed ?? 1;
-		this.effects = baseTowerStats.effects ? baseTowerStats.effects.map((eff) => effects[eff]) : [];
+		this.projectileSpeed = towerStats.projectileSpeed;
+		this.effects = []; //towerStats.effects.map((eff) => this.effects[eff]);
+		this.gridPosition = position;
 		this.reloadProgress = 0;
 		this.thrownProjectiles = [];
-		this.renderer = new TowerRenderer(this);
+		this._renderer = new TowerRenderer();
+		this.render();
 	}
 
 	public fireAtEnemy(enemy: Enemy, count = 1) {
@@ -84,7 +64,7 @@ class Tower implements Renderable, Tickable{
 		if (this.reloadProgress < 1) {
 			return;
 		}
-		var enemies:Enemy[] = Config.currentGame.getEnemiesInRange(this.gridPosition, this.baseRange);
+		var enemies:Enemy[] = this.game.getEnemiesInRange(this.gridPosition, this.baseRange);
 		if (enemies.length > 0) {
 			//if enemy in range
 			var count = Math.floor(this.reloadProgress);
@@ -97,10 +77,6 @@ class Tower implements Renderable, Tickable{
 		
 	}
 
-	setPosition(position: GridPosition) {
-		this.gridPosition = position;
-	}
-
 	removeProjectile(projectile: Projectile) {
 		this.thrownProjectiles = this.thrownProjectiles.filter(function(element){
 			return element !== projectile;
@@ -108,6 +84,6 @@ class Tower implements Renderable, Tickable{
 	}
 
 	render() {
-		this.renderer.render();
+		this._renderer.render(this);
 	}
 }

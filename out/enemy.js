@@ -1,9 +1,10 @@
-/// <reference path="references.ts" />
-import { Config, GridPosition, Vector } from "./references.js";
-export { Enemy };
-var Enemy = /** @class */ (function () {
-    function Enemy(stats) {
-        var pos = Config.currentGame.getSpawnPoint();
+import { app } from "./init.js";
+import { GridPosition } from "./utility/position.js";
+import { Vector2 } from "./utility/vector.js";
+export class Enemy {
+    constructor(stats, game) {
+        this.game = game;
+        var pos = game.getSpawnPoint();
         //this.stats = clone(game.currentLevel.data.waves[game.currentWave].stats);
         this.maxHealth = stats.maxHealth;
         this.speed = stats.speed;
@@ -15,59 +16,49 @@ var Enemy = /** @class */ (function () {
         this.currentPathPoint = 0;
         this.endReached = false;
         this._representation = new PIXI.Graphics();
-        Config.app.stage.addChild(this._representation);
+        app.stage.addChild(this._representation);
     }
-    Object.defineProperty(Enemy.prototype, "currentHealth", {
-        get: function () {
-            return this._currentHealth;
-        },
-        set: function (value) {
-            if (this._currentHealth <= 0)
-                return;
-            if (value <= 0) {
-                this.destroy();
-            }
-            else {
-                this.render();
-            }
-            this._currentHealth = value;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(Enemy.prototype, "destroyed", {
-        get: function () {
-            return this._destroyed;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Enemy.prototype.destroy = function () {
+    get currentHealth() {
+        return this._currentHealth;
+    }
+    set currentHealth(value) {
+        if (this._currentHealth <= 0)
+            return;
+        if (value <= 0) {
+            this.destroy();
+        }
+        else {
+            this.render();
+        }
+        this._currentHealth = value;
+    }
+    get destroyed() {
+        return this._destroyed;
+    }
+    destroy() {
         if (this._destroyed)
             return;
         this._destroyed = true;
         this._representation.destroy();
-        delete this.position;
-        delete this.effects;
-    };
-    Enemy.prototype.hit = function (origin) {
+    }
+    hit(origin) {
         origin.owner.effects.forEach(function (effect) {
             effect(origin);
         });
         this.currentHealth -= origin.owner.baseDamage;
-    };
-    Enemy.prototype.isValid = function () {
+    }
+    isValid() {
         return !(this.endReached) && this._currentHealth > 0;
-    };
+    }
     ;
-    Enemy.prototype.move = function (factor) {
+    move(factor) {
         if (this.endReached) {
             return;
         }
-        var size = Config.gridSquareSize;
-        var points = Config.currentGame.level.pathPoints;
+        var size = 1;
+        var points = this.game.level.pathPoints;
         var destination = points[this.currentPathPoint];
-        var delta = new Vector(destination.x - this.position.x, destination.y - this.position.y);
+        var delta = new Vector2(destination.x - this.position.x, destination.y - this.position.y);
         var baseVector = delta.normalize();
         this.position.x = this.position.x + baseVector.x * factor * this.speed;
         this.position.y = this.position.y + baseVector.y * factor * this.speed;
@@ -82,28 +73,28 @@ var Enemy = /** @class */ (function () {
             }
         }
         //console.log(this.position);
-    };
+    }
     ;
-    Enemy.prototype.onTick = function (deltaTime) {
+    onTick(deltaTime) {
         if (this._destroyed)
             return;
         this.move(deltaTime / 1000);
         if (this.isValid()) {
-            var pos = this.position.toPixelPos();
+            let pos = this.position.toPixelPos();
             this._representation.position.x = pos.x;
             this._representation.position.y = pos.y;
             //this._representation.moveTo(pos.x, pos.y);
         }
         //console.log(config.gridSquareSize * deltaTime/1000 * 60);
         //this.position.y += deltaTime/1000;
-    };
+    }
     ;
-    Enemy.prototype.render = function () {
+    render() {
         //let topLeftCoords = this.topLeftPosition();
         //let leftPx = topLeftCoords.x * Config.gridSquareSize + Config.gridOffset.x;
         //let topPx = topLeftCoords.y * Config.gridSquareSize + Config.gridOffset.y;
-        var sizePx = this.size * Config.gridSquareSize;
-        var colorHealth = Math.floor((this._currentHealth / this.maxHealth) * 255);
+        let sizePx = this.size;
+        let colorHealth = Math.floor((this._currentHealth / this.maxHealth) * 255);
         this._representation
             .lineStyle(1, 0x000000)
             .beginFill(colorHealth * 256)
@@ -112,10 +103,9 @@ var Enemy = /** @class */ (function () {
         //ctx.fillStyle = colorStr;
         //ctx.fillRect(leftPx, topPx, sizePx, sizePx);
         //ctx.fillStyle = "#000000";
-    };
-    Enemy.prototype.topLeftPosition = function () {
+    }
+    topLeftPosition() {
         return new GridPosition(this.position.x - (this.size / 2), this.position.y - (this.size / 2));
-    };
-    return Enemy;
-}());
+    }
+}
 //# sourceMappingURL=enemy.js.map
