@@ -1,22 +1,29 @@
 import { WaveData, LevelData } from "./data/levelData.js";
 import { Game } from "./game.js";
 import { app, textures } from "./init.js";
-import { LevelRenderer } from "./renderers/levelRenderer.js";
+import { GameRenderer } from "./renderers/gameRenderer.js";
 import { GridPosition } from "./utility/position.js";
 
 export class Level {
 	static readonly emptyCell = 0;
 	static readonly pathCell = 1;
 
+	public game: Game;
 	public spawnPoint: GridPosition;
 	public pathPoints: GridPosition[];
 	public waves: WaveData[];
 	public grid!: number[][];
 	public startingMoney: number;
 
-	private _renderer = new LevelRenderer();
+	get width() {
+		return this.grid.length;
+	}
 
-	constructor(data: LevelData, public game: Game){
+	get height() {
+		return this.grid[0].length;
+	}
+	
+	constructor(data: LevelData, game: Game){
 		this.startingMoney = data.startingCurrency;
 		this.spawnPoint = new GridPosition(...data.spawnPoint);
 		this.pathPoints = data.pathPoints.map(
@@ -24,6 +31,7 @@ export class Level {
 		);
 		this.waves = data.waves;
 		this.generateGrid(data.width, data.height);
+		this.game = game;
 	}
 
 	private generateGrid(width: number, height: number): void {
@@ -38,7 +46,7 @@ export class Level {
 				this.grid[i][j] = Level.emptyCell;
 			}
 		}
-		this.grid[startPoint.x][startPoint.y] = 1;
+		this.grid[startPoint.x][startPoint.y] = Level.pathCell;
 	
 		for (var i = 0; i < this.pathPoints.length; i++) {
 			var nextPoint = {
@@ -74,7 +82,4 @@ export class Level {
 		}
 	}
 
-	render(): void {
-		this._renderer.render(this);
-	}
 }

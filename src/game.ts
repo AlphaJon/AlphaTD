@@ -2,6 +2,7 @@ import { LevelData, WaveData } from "./data/levelData.js";
 import { Enemy } from "./enemy.js";
 import { app, towers } from "./init.js";
 import { Level } from "./level.js";
+import { GameRenderer } from "./renderers/gameRenderer.js";
 import { Tower } from "./tower.js";
 import { GridPosition } from "./utility/position.js";
 
@@ -16,6 +17,7 @@ export class Game implements Tickable {
 	public enemyList: Enemy[];
 	public pendingEnemyList: {enemy:Enemy, delay:number}[];
 	private _money!: number;
+	private _renderer = new GameRenderer();
 
 	get money(): number{
 		return this._money;
@@ -38,6 +40,10 @@ export class Game implements Tickable {
 		this.pendingEnemyList = [];
 		app.ticker.add(this.onTick, this);
 		this.render();
+	}
+
+	public getContainer(): PIXI.Container {
+		return this._renderer.container;
 	}
 
 	public getCurrentWave(): WaveData {
@@ -138,11 +144,12 @@ export class Game implements Tickable {
 		if (this.money >= towerData.cost) {
 			let tower = new Tower(towerData, position, this);
 			this.towerList.push(tower);
+			this.money -= towerData.cost;
 		}
 	}
 
-	public render(){
-		this.level.render();
+	public render(): void {
+		this._renderer.render(this);
 	}
 
 	public resume(){

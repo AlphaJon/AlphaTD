@@ -1,4 +1,4 @@
-import { app } from "./init.js";
+import { textures } from "./init.js";
 import { GridPosition } from "./utility/position.js";
 import { Vector2 } from "./utility/vector.js";
 export class Enemy {
@@ -15,8 +15,10 @@ export class Enemy {
         this.position = GridPosition.fromPoint(pos);
         this.currentPathPoint = 0;
         this.endReached = false;
-        this._representation = new PIXI.Graphics();
-        app.stage.addChild(this._representation);
+        this._representation = new PIXI.Sprite(textures["tower"]);
+        this.render();
+        this.game.getContainer().addChild(this._representation);
+        //app.stage.addChild(this._representation);
     }
     get currentHealth() {
         return this._currentHealth;
@@ -63,7 +65,7 @@ export class Enemy {
         this.position.x = this.position.x + baseVector.x * factor * this.speed;
         this.position.y = this.position.y + baseVector.y * factor * this.speed;
         if (delta.weight() <= 0.01) {
-            //console.log("x:"+this.position.x+", y: "+this.position.y);
+            console.log("x:" + this.position.x + ", y: " + this.position.y);
             this.currentPathPoint++;
             //console.log(this.currentPathPoint);
             //console.log(points);
@@ -80,7 +82,7 @@ export class Enemy {
             return;
         this.move(deltaTime / 1000);
         if (this.isValid()) {
-            let pos = this.position.toPixelPos();
+            let pos = this.position; //.toPixelPos();
             this._representation.position.x = pos.x;
             this._representation.position.y = pos.y;
             //this._representation.moveTo(pos.x, pos.y);
@@ -95,11 +97,15 @@ export class Enemy {
         //let topPx = topLeftCoords.y * Config.gridSquareSize + Config.gridOffset.y;
         let sizePx = this.size;
         let colorHealth = Math.floor((this._currentHealth / this.maxHealth) * 255);
-        this._representation
+        this._representation.width = 1;
+        this._representation.height = 1;
+        this._representation.anchor.set(0.5, 0.5);
+        this._representation.position.set(this.position.x, this.position.y);
+        /*this._representation
             .lineStyle(1, 0x000000)
-            .beginFill(colorHealth * 256)
+            .beginFill(colorHealth*256)
             .drawCircle(0, 0, sizePx)
-            .endFill();
+            .endFill();*/
         //ctx.fillStyle = colorStr;
         //ctx.fillRect(leftPx, topPx, sizePx, sizePx);
         //ctx.fillStyle = "#000000";

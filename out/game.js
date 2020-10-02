@@ -1,6 +1,7 @@
 import { Enemy } from "./enemy.js";
 import { app } from "./init.js";
 import { Level } from "./level.js";
+import { GameRenderer } from "./renderers/gameRenderer.js";
 import { Tower } from "./tower.js";
 /**
  * Starts a new game based on a given level, builds level from levelData
@@ -9,6 +10,7 @@ export class Game {
     constructor(levelData) {
         this.paused = false;
         this.waveNumber = 0;
+        this._renderer = new GameRenderer();
         this.level = new Level(levelData, this);
         this.money = levelData.startingCurrency;
         this.waveNumber = 0;
@@ -27,6 +29,9 @@ export class Game {
         if (moneyTag !== null) {
             moneyTag.innerHTML = "" + value;
         }
+    }
+    getContainer() {
+        return this._renderer.container;
     }
     getCurrentWave() {
         return this.level.waves[this.waveNumber];
@@ -117,10 +122,11 @@ export class Game {
         if (this.money >= towerData.cost) {
             let tower = new Tower(towerData, position, this);
             this.towerList.push(tower);
+            this.money -= towerData.cost;
         }
     }
     render() {
-        this.level.render();
+        this._renderer.render(this);
     }
     resume() {
         this.paused = false;

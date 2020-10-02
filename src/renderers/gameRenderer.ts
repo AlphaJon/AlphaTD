@@ -1,13 +1,15 @@
+import { DisplayObject } from "pixi.js";
+import { Game } from "../game.js";
 import { app, textures, towers } from "../init.js";
 import { Level } from "../level.js";
 import { PixelPosition, GridPosition } from "../utility/position.js";
 
-export class LevelRenderer implements BaseRenderer {
+export class GameRenderer implements BaseRenderer {
     static defaultScale = 32; //size of one grid square in pixels
     public container = new PIXI.Container();
     private _destroyed = false;
 
-    render(level: Level): void {
+    render(game: Game): void {
         if (this._destroyed){
             throw new Error("Invalid method call on a destroyed renderer");
 		}
@@ -17,17 +19,19 @@ export class LevelRenderer implements BaseRenderer {
 
 		var currentPos: PixelPosition = new PixelPosition(0,0);
 		//ctx.fillStyle("rgb(0,0,0)");
-		for (var i = 0; i < 15; i++) {
-			for (var j = 0; j < 12; j++) {
-				if (level.grid[i][j] === Level.emptyCell) {
+		for (var i = 0; i < game.level.width; i++) {
+			for (var j = 0; j < game.level.height; j++) {
+				if (game.level.grid[i][j] === Level.emptyCell) {
 					var cell = new PIXI.Sprite(texture);
 					cell.width = 1;
 					cell.height = 1;
 					cell.x = currentPos.x;
 					cell.y = currentPos.y;
 					cell.interactive = true;
-					cell.on("pointertap", () => {
-						level.game.placeTower(towers["basic"], new GridPosition(i, j))
+					let cellPosition = new GridPosition(i, j);
+					cell.on("pointertap", function() {
+						//console.log(cellPosition);
+						game.placeTower(towers["basic"], cellPosition);
 					})
 					this.container.addChild(cell);
 				} else {

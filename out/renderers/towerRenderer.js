@@ -1,4 +1,4 @@
-import { app, textures } from "../init.js";
+import { textures } from "../init.js";
 export class TowerRenderer {
     render(tower) {
         let pos = tower.gridPosition;
@@ -7,7 +7,8 @@ export class TowerRenderer {
         cell.height = 1;
         cell.x = pos.x;
         cell.y = pos.y;
-        app.stage.addChild(cell);
+        tower.game.getContainer().addChild(cell);
+        //app.stage.addChild(cell);
     }
     destroy() {
         throw new Error("Method not implemented.");

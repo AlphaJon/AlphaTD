@@ -9,8 +9,9 @@ export class TowerRenderer implements BaseRenderer {
 		cell.width = 1;
 		cell.height = 1;
 		cell.x = pos.x;
-		cell.y = pos.y;
-		app.stage.addChild(cell);
+        cell.y = pos.y;
+        tower.game.getContainer().addChild(cell);
+		//app.stage.addChild(cell);
     }
 
     destroy(): void {
